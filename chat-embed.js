@@ -2,11 +2,11 @@
 (function() {
     // Inject styles (will be updated to use CSS variables from config)
     const styles = `
-        .n8n-chat-widget-embed {
+        .n8n-chat-widget-embed-root { /* Renamed root class to avoid conflicts and signify it's the root */
             container-type: inline-size; /* Enable container queries */
             --chat--color-primary: var(--n8n-chat-primary-color, #854fff);
             --chat--color-secondary: var(--n8n-chat-secondary-color, #6b3fd4);
-            --chat--color-background: var(--n8n-chat-background-color, transparent); /* Default transparent */
+            --chat--color-background: var(--n8n-chat-background-color, transparent); /* Default transparent for the very root */
             --chat--color-internal-background: var(--n8n-chat-internal-background-color, #ffffff); /* Background for internal elements like chat container, messages */
             --chat--color-font: var(--n8n-chat-font-color, #333333);
             --chat--font-size: var(--n8n-chat-font-size, 14px);
@@ -38,9 +38,10 @@
             display: flex; /* Use flexbox for layout */
             flex-direction: column; /* Stack children vertically */
             box-sizing: border-box;
+            background-color: var(--chat--color-background); /* Apply root background */
         }
 
-        .n8n-chat-widget-embed .embed-container {
+        .n8n-chat-widget-embed-root .embed-container {
             flex: 1; /* Allow container to grow and shrink */
             display: flex;
             flex-direction: column;
@@ -52,7 +53,7 @@
             font-family: inherit;
         }
 
-        .n8n-chat-widget-embed .brand-header {
+        .n8n-chat-widget-embed-root .brand-header {
             padding: 16px;
             display: flex;
             align-items: center;
@@ -63,22 +64,22 @@
             flex-shrink: 0; /* Prevent header from shrinking */
         }
 
-        .n8n-chat-widget-embed .close-button { /* Keep for consistency in structure but hidden */
+        .n8n-chat-widget-embed-root .close-button { /* Keep for consistency in structure but hidden */
             display: none;
         }
 
-        .n8n-chat-widget-embed .brand-header img {
+        .n8n-chat-widget-embed-root .brand-header img {
             width: 32px;
             height: 32px;
         }
 
-        .n8n-chat-widget-embed .brand-header span {
+        .n8n-chat-widget-embed-root .brand-header span {
             font-size: 18px;
             font-weight: 500;
             color: var(--chat--color-font);
         }
 
-        .n8n-chat-widget-embed .initial-state {
+        .n8n-chat-widget-embed-root .initial-state {
             flex: 1; /* Take up remaining space */
             display: flex;
             flex-direction: column;
@@ -88,7 +89,7 @@
             text-align: center;
         }
 
-        .n8n-chat-widget-embed .welcome-text {
+        .n8n-chat-widget-embed-root .welcome-text {
             font-size: 24px;
             font-weight: 600;
             color: var(--chat--color-font);
@@ -96,7 +97,7 @@
             line-height: 1.3;
         }
 
-        .n8n-chat-widget-embed .new-chat-btn {
+        .n8n-chat-widget-embed-root .new-chat-btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -116,33 +117,33 @@
             margin-bottom: 12px;
         }
 
-        .n8n-chat-widget-embed .new-chat-btn:hover {
+        .n8n-chat-widget-embed-root .new-chat-btn:hover {
             transform: scale(1.02);
         }
 
-        .n8n-chat-widget-embed .message-icon {
+        .n8n-chat-widget-embed-root .message-icon {
             width: 20px;
             height: 20px;
         }
 
-        .n8n-chat-widget-embed .response-text {
+        .n8n-chat-widget-embed-root .response-text {
             font-size: 14px;
             color: var(--chat--color-font);
             opacity: 0.7;
             margin: 0;
         }
 
-        .n8n-chat-widget-embed .chat-interface {
+        .n8n-chat-widget-embed-root .chat-interface {
             display: none;
             flex-direction: column;
             height: 100%;
         }
 
-        .n8n-chat-widget-embed .chat-interface.active {
+        .n8n-chat-widget-embed-root .chat-interface.active {
             display: flex;
         }
 
-        .n8n-chat-widget-embed .chat-messages {
+        .n8n-chat-widget-embed-root .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
@@ -151,7 +152,7 @@
             flex-direction: column;
         }
 
-        .n8n-chat-widget-embed .chat-message {
+        .n8n-chat-widget-embed-root .chat-message {
             padding: 8px 12px;
             margin: 6px 0;
             border-radius: 12px;
@@ -163,15 +164,15 @@
             word-wrap: break-word;
         }
 
-        .n8n-chat-widget-embed .chat-message.user {
+        .n8n-chat-widget-embed-root .chat-message.user {
             background: linear-gradient(135deg, var(--chat--user-bubble-bg-start) 0%, var(--chat--user-bubble-bg-end) 100%);
             color: var(--chat--user-bubble-text-color);
             align-self: flex-end;
-            box-shadow: 0 4px 12px hsla(255, 100%, 75%, 0.2); /* Adjusted for general primary color */
+            box-shadow: 0 4px 12px hsla(255, 100%, 75%, 0.2);
             border: none;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot {
+        .n8n-chat-widget-embed-root .chat-message.bot {
             background: var(--chat--bot-bubble-bg);
             border: 1px solid var(--chat--bot-bubble-border);
             color: var(--chat--bot-bubble-text-color);
@@ -180,42 +181,42 @@
         }
 
         /* Markdown styling for bot messages */
-        .n8n-chat-widget-embed .chat-message.bot h1,
-        .n8n-chat-widget-embed .chat-message.bot h2,
-        .n8n-chat-widget-embed .chat-message.bot h3,
-        .n8n-chat-widget-embed .chat-message.bot h4,
-        .n8n-chat-widget-embed .chat-message.bot h5,
-        .n8n-chat-widget-embed .chat-message.bot h6 {
+        .n8n-chat-widget-embed-root .chat-message.bot h1,
+        .n8n-chat-widget-embed-root .chat-message.bot h2,
+        .n8n-chat-widget-embed-root .chat-message.bot h3,
+        .n8n-chat-widget-embed-root .chat-message.bot h4,
+        .n8n-chat-widget-embed-root .chat-message.bot h5,
+        .n8n-chat-widget-embed-root .chat-message.bot h6 {
             margin: 0.3em 0;
             font-weight: 600;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot ul,
-        .n8n-chat-widget-embed .chat-message.bot ol {
+        .n8n-chat-widget-embed-root .chat-message.bot ul,
+        .n8n-chat-widget-embed-root .chat-message.bot ol {
             margin: 0.3em 0;
             padding-left: 1.2em;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot p {
+        .n8n-chat-widget-embed-root .chat-message.bot p {
             margin: 0.3em 0;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot p:first-child {
+        .n8n-chat-widget-embed-root .chat-message.bot p:first-child {
             margin-top: 0 !important;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot p:last-child {
+        .n8n-chat-widget-embed-root .chat-message.bot p:last-child {
             margin-bottom: 0 !important;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot code {
+        .n8n-chat-widget-embed-root .chat-message.bot code {
             background: var(--chat--suggested-question-bg); /* Reusing for code blocks */
             padding: 0.1em 0.3em;
             border-radius: 3px;
             font-size: 0.9em;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot pre {
+        .n8n-chat-widget-embed-root .chat-message.bot pre {
             background: var(--chat--suggested-question-bg); /* Reusing for code blocks */
             padding: 0.8em;
             border-radius: 6px;
@@ -223,17 +224,17 @@
             margin: 0.3em 0;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot pre code {
+        .n8n-chat-widget-embed-root .chat-message.bot pre code {
             background: none;
             padding: 0;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot a {
+        .n8n-chat-widget-embed-root .chat-message.bot a {
             color: var(--chat--color-primary);
             text-decoration: underline;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot blockquote {
+        .n8n-chat-widget-embed-root .chat-message.bot blockquote {
             border-left: 3px solid var(--chat--color-primary);
             padding-left: 0.8em;
             margin: 0.3em 0;
@@ -241,25 +242,24 @@
         }
 
         /* Remove default margins from first and last child elements */
-        .n8n-chat-widget-embed .chat-message.bot > *:first-child {
+        .n8n-chat-widget-embed-root .chat-message.bot > *:first-child {
             margin-top: 0;
         }
 
-        .n8n-chat-widget-embed .chat-message.bot > *:last-child {
+        .n8n-chat-widget-embed-root .chat-message.bot > *:last-child {
             margin-bottom: 0 !important;
         }
 
-        .n8n-chat-widget-embed .suggested-questions {
+        .n8n-chat-widget-embed-root .suggested-questions {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            padding: 10px 16px 0px 16px; /* Padding only top/sides */
-            border-top: 1px solid rgba(133, 79, 255, 0.1);
+            padding: 10px 16px 10px 16px; /* Added bottom padding */
             background: var(--chat--color-internal-background);
             flex-shrink: 0; /* Prevent from shrinking */
         }
 
-        .n8n-chat-widget-embed .suggested-question-bubble {
+        .n8n-chat-widget-embed-root .suggested-question-bubble {
             background: var(--chat--suggested-question-bg);
             border: 1px solid var(--chat--suggested-question-border);
             color: var(--chat--suggested-question-text-color);
@@ -271,20 +271,20 @@
             transition: background-color 0.2s, border-color 0.2s;
         }
 
-        .n8n-chat-widget-embed .suggested-question-bubble:hover {
+        .n8n-chat-widget-embed-root .suggested-question-bubble:hover {
             background-color: var(--chat--suggested-question-border);
         }
 
-        .n8n-chat-widget-embed .chat-input {
+        .n8n-chat-widget-embed-root .chat-input {
             padding: 16px;
             background: var(--chat--color-internal-background);
-            border-top: 1px solid rgba(133, 79, 255, 0.1);
+            border-top: 1px solid rgba(133, 79, 255, 0.1); /* This border is desired for input */
             display: flex;
             gap: 8px;
             flex-shrink: 0; /* Prevent from shrinking */
         }
 
-        .n8n-chat-widget-embed .chat-input textarea {
+        .n8n-chat-widget-embed-root .chat-input textarea {
             flex: 1;
             padding: 12px;
             border: 1px solid var(--chat--input-border);
@@ -302,22 +302,22 @@
             box-sizing: border-box;
         }
 
-        .n8n-chat-widget-embed .chat-input textarea::placeholder {
+        .n8n-chat-widget-embed-root .chat-input textarea::placeholder {
             color: var(--chat--input-placeholder-color);
             opacity: 0.8;
         }
 
-        .n8n-chat-widget-embed .chat-input textarea:focus {
+        .n8n-chat-widget-embed-root .chat-input textarea:focus {
             outline: none;
             border-color: var(--chat--color-primary);
         }
 
-        .n8n-chat-widget-embed .chat-input textarea:disabled {
+        .n8n-chat-widget-embed-root .chat-input textarea:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
 
-        .n8n-chat-widget-embed .chat-input button {
+        .n8n-chat-widget-embed-root .chat-input button {
             background: linear-gradient(135deg, var(--chat--send-button-bg-start) 0%, var(--chat--send-button-bg-end) 100%);
             color: var(--chat--send-button-text-color);
             border: none;
@@ -331,20 +331,23 @@
             line-height: 44px; /* Vertically center icon/text */
             min-width: 70px; /* Ensure send button has enough width */
             flex-shrink: 0; /* Prevent button from shrinking */
+            display: flex; /* Adjust for SVG placement */
+            align-items: center; /* Center content */
+            justify-content: center; /* Center content */
         }
 
-        .n8n-chat-widget-embed .chat-input button:hover:not(:disabled) {
+        .n8n-chat-widget-embed-root .chat-input button:hover:not(:disabled) {
             transform: scale(1.05);
         }
 
-        .n8n-chat-widget-embed .chat-input button:disabled {
+        .n8n-chat-widget-embed-root .chat-input button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none !important;
         }
 
         /* Typing indicator styles */
-        .n8n-chat-widget-embed .typing-indicator {
+        .n8n-chat-widget-embed-root .typing-indicator {
             display: flex;
             align-items: center;
             padding: 12px 16px;
@@ -356,7 +359,7 @@
             margin: 6px 0;
         }
 
-        .n8n-chat-widget-embed .typing-indicator span {
+        .n8n-chat-widget-embed-root .typing-indicator span {
             height: 8px;
             width: 8px;
             background-color: var(--chat--color-primary);
@@ -366,11 +369,11 @@
             animation: typing 1.4s infinite ease-in-out;
         }
 
-        .n8n-chat-widget-embed .typing-indicator span:nth-child(1) {
+        .n8n-chat-widget-embed-root .typing-indicator span:nth-child(1) {
             animation-delay: -0.32s;
         }
 
-        .n8n-chat-widget-embed .typing-indicator span:nth-child(2) {
+        .n8n-chat-widget-embed-root .typing-indicator span:nth-child(2) {
             animation-delay: -0.16s;
         }
 
@@ -385,7 +388,7 @@
             }
         }
 
-        .n8n-chat-widget-embed .chat-footer {
+        .n8n-chat-widget-embed-root .chat-footer {
             padding: 8px;
             text-align: center;
             background: var(--chat--color-internal-background);
@@ -393,7 +396,7 @@
             flex-shrink: 0; /* Prevent footer from shrinking */
         }
 
-        .n8n-chat-widget-embed .chat-footer a {
+        .n8n-chat-widget-embed-root .chat-footer a {
             color: var(--chat--color-primary);
             text-decoration: none;
             font-size: 12px;
@@ -402,45 +405,45 @@
             font-family: inherit;
         }
 
-        .n8n-chat-widget-embed .chat-footer a:hover {
+        .n8n-chat-widget-embed-root .chat-footer a:hover {
             opacity: 1;
         }
 
-        /* Responsive adjustments for smaller embed sizes */
+        /* Responsive adjustments for smaller embed sizes using container queries */
         @container (max-width: 480px) {
-            .n8n-chat-widget-embed .welcome-text {
+            .n8n-chat-widget-embed-root .welcome-text {
                 font-size: 20px;
             }
-            .n8n-chat-widget-embed .new-chat-btn {
+            .n8n-chat-widget-embed-root .new-chat-btn {
                 padding: 12px 20px;
                 font-size: 14px;
             }
-            .n8n-chat-widget-embed .brand-header {
+            .n8n-chat-widget-embed-root .brand-header {
                 padding: 12px;
             }
-            .n8n-chat-widget-embed .brand-header img {
+            .n8n-chat-widget-embed-root .brand-header img {
                 width: 28px;
                 height: 28px;
             }
-            .n8n-chat-widget-embed .brand-header span {
+            .n8n-chat-widget-embed-root .brand-header span {
                 font-size: 16px;
             }
-            .n8n-chat-widget-embed .chat-messages {
+            .n8n-chat-widget-embed-root .chat-messages {
                 padding: 15px;
             }
-            .n8n-chat-widget-embed .chat-input {
+            .n8n-chat-widget-embed-root .chat-input {
                 padding: 12px;
             }
-            .n8n-chat-widget-embed .chat-input textarea {
+            .n8n-chat-widget-embed-root .chat-input textarea {
                 min-height: 40px;
                 height: 40px;
             }
-            .n8n-chat-widget-embed .chat-input button {
+            .n8n-chat-widget-embed-root .chat-input button {
                 height: 40px;
                 line-height: 40px;
                 padding: 0 16px;
             }
-            .n8n-chat-widget-embed .suggested-question-bubble {
+            .n8n-chat-widget-embed-root .suggested-question-bubble {
                 font-size: 13px;
                 padding: 6px 10px;
             }
@@ -482,6 +485,7 @@
 
         // Default configuration
         const defaultConfig = {
+            targetElementId: 'n8n-chat-embed', // New config for target element
             webhook: {
                 url: '',
                 route: ''
@@ -499,6 +503,7 @@
             style: {
                 primaryColor: '#854fff',
                 secondaryColor: '#6b3fd4',
+                backgroundColor: 'transparent', // Added for root container
                 internalBackgroundColor: '#ffffff', // New variable for internal elements
                 fontColor: '#333333',
                 fontSize: '14px',
@@ -567,13 +572,21 @@
 
         let currentSessionId = '';
 
+        // Find the target element
+        const targetElement = document.getElementById(config.targetElementId);
+        if (!targetElement) {
+            console.error(`N8N Chat Widget Embed: Target element with ID '${config.targetElementId}' not found.`);
+            return;
+        }
+        
         // Create widget container that takes up 100% of the parent
         const widgetContainer = document.createElement('div');
-        widgetContainer.className = 'n8n-chat-widget-embed';
+        widgetContainer.className = 'n8n-chat-widget-embed-root';
 
         // Set CSS variables based on the final config
         widgetContainer.style.setProperty('--n8n-chat-primary-color', config.style.primaryColor);
         widgetContainer.style.setProperty('--n8n-chat-secondary-color', config.style.secondaryColor);
+        widgetContainer.style.setProperty('--n8n-chat-background-color', config.style.backgroundColor); // Root background
         widgetContainer.style.setProperty('--n8n-chat-internal-background-color', config.style.internalBackgroundColor);
         widgetContainer.style.setProperty('--n8n-chat-font-color', config.style.fontColor);
         widgetContainer.style.setProperty('--n8n-chat-font-size', config.style.fontSize);
@@ -635,8 +648,8 @@
 
         embedContainer.innerHTML = initialStateHTML + chatInterfaceHTML;
         widgetContainer.appendChild(embedContainer);
-        // Append the widget to the body, as Framer handles the container size
-        document.body.appendChild(widgetContainer);
+        // Append the widget to the target element, not body
+        targetElement.appendChild(widgetContainer);
 
         const newChatBtn = embedContainer.querySelector('.new-chat-btn');
         const initialState = embedContainer.querySelector('.initial-state');
@@ -645,7 +658,7 @@
         const textarea = embedContainer.querySelector('textarea');
         const sendButton = embedContainer.querySelector('button[type="submit"]');
         const suggestedQuestionsContainer = embedContainer.querySelector('.suggested-questions');
-        const brandHeader = embedContainer.querySelector('.brand-header');
+        // const brandHeader = embedContainer.querySelector('.brand-header'); // Not directly used here
 
          // Helper to scroll to bottom of messages
          const scrollToBottom = () => {
@@ -724,7 +737,9 @@
                 scrollToBottom();
 
                 // Render suggested questions if they exist
-                renderSuggestedQuestions();
+                 if (config.suggestedQuestions && config.suggestedQuestions.length > 0) {
+                     renderSuggestedQuestions(config.suggestedQuestions);
+                 }
 
                 textarea.focus(); // Focus input after starting chat
             } catch (error) {
@@ -745,9 +760,9 @@
             sendButton.style.opacity = '0.6';
             sendButton.style.cursor = 'not-allowed';
             
-            const originalButtonText = sendButton.innerHTML; // Can use innerHTML for SVG/text if needed
-            sendButton.innerHTML = `<svg class="message-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V20M20 12H4"/></svg>`; // Loading spinner or simple arrow
-            
+            const originalButtonText = sendButton.textContent; // Store original text
+            sendButton.textContent = 'Send'; // Set to 'Send' or a simpler loading text
+
             const messageData = {
                 action: "sendMessage",
                 sessionId: currentSessionId,
@@ -812,7 +827,7 @@
                 textarea.disabled = false;
                 sendButton.style.opacity = '1';
                 sendButton.style.cursor = 'pointer';
-                sendButton.innerHTML = originalButtonText; // Restore original button text/icon
+                sendButton.textContent = originalButtonText; // Restore original button text
                 textarea.focus(); // Return focus to textarea
                  // Clear textarea only if it was not a suggested question (as it auto-clears on send)
                 if (!isSuggested) {
@@ -822,12 +837,12 @@
             }
         }
         
-        function renderSuggestedQuestions() {
-            if (!suggestedQuestionsContainer || !config.suggestedQuestions || config.suggestedQuestions.length === 0) {
+        function renderSuggestedQuestions(questions) {
+            if (!suggestedQuestionsContainer || !questions || questions.length === 0) {
                 return;
             }
             suggestedQuestionsContainer.innerHTML = ''; // Clear previous
-            config.suggestedQuestions.forEach((question, index) => {
+            questions.forEach((question, index) => {
                 const bubble = document.createElement('div');
                 bubble.className = 'suggested-question-bubble';
                 bubble.textContent = question;
@@ -838,8 +853,6 @@
                     // Hide the suggested questions container if no bubbles left
                     if (suggestedQuestionsContainer.children.length === 0) {
                          suggestedQuestionsContainer.style.display = 'none';
-                         // Optionally remove the top border if all suggestions are gone
-                         // suggestedQuestionsContainer.style.borderTop = 'none';
                     }
                 });
                 suggestedQuestionsContainer.appendChild(bubble);
@@ -848,6 +861,9 @@
         }
 
         newChatBtn.addEventListener('click', startNewConversation);
+        
+        // Initial state for send button icon
+        sendButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
         
         sendButton.addEventListener('click', () => {
             const message = textarea.value.trim();
@@ -873,11 +889,10 @@
         // Auto-resize textarea logic
         const adjustTextareaHeight = () => {
             textarea.style.height = 'auto'; // Reset height to recalculate
-            textarea.style.height = Math.min(textarea.scrollHeight, parseInt(getComputedStyle(textarea).lineHeight) * 5) + 'px'; // Limit to 5 lines
+            textarea.style.height = Math.min(textarea.scrollHeight, parseInt(getComputedStyle(textarea).lineHeight) * 5 || 100) + 'px'; // Limit to 5 lines or 100px
             scrollToBottom(); // Keep messages visible
         };
         textarea.addEventListener('input', adjustTextareaHeight);
-        // Also adjust height on initial load in case of pre-filled text (though unlikely here)
-        adjustTextareaHeight();
+        adjustTextareaHeight(); // Call on init
     }
 })();
