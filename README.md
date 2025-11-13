@@ -79,4 +79,5 @@ To embed the chat widget, you need to include a container `div`, the configurati
     ]
   };
 </script>
+<script src="https://cdn.jsdelivr.net/gh/daniel-lca/N8N-Chat-Embed@master/chat-embed.js"></script>
 <!-- End Widget Configuration -->
