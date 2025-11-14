@@ -267,15 +267,34 @@
         /* Suggested questions container */
         .n8n-chat-widget-embed-root .suggested-questions {
             display: flex;
-            flex-wrap: wrap;
+            /* No flex-wrap: wrap; */
+            overflow-x: auto; /* Enable horizontal scrolling */
             gap: 8px;
             padding: 10px 16px 10px 16px; /* Uniform padding, no top border */
             background: var(--chat--color-internal-background);
             flex-shrink: 0;
+            opacity: 1; /* Default state */
+            pointer-events: auto; /* Default state */
+            transition: opacity 0.3s ease-in-out;
+            /* Hide scrollbar for various browsers */
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        /* For Chrome, Safari, Opera */
+        .n8n-chat-widget-embed-root .suggested-questions::-webkit-scrollbar {
+            display: none;
+        }
+
+
+        .n8n-chat-widget-embed-root .suggested-questions.disabled {
+            opacity: 0.5;
+            pointer-events: none; /* Disable interaction */
         }
 
         /* Individual suggested question bubble */
         .n8n-chat-widget-embed-root .suggested-question-bubble {
+            flex-shrink: 0; /* Important: Prevents suggested bubbles from shrinking */
+            white-space: nowrap; /* Important: Prevents text inside from wrapping */
             background: var(--chat--suggested-question-bg);
             border: 1px solid var(--chat--suggested-question-border);
             color: var(--chat--suggested-question-text-color);
@@ -283,7 +302,6 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
-            white-space: nowrap;
             transition: background-color 0.2s, border-color 0.2s;
         }
 
@@ -333,7 +351,7 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
-
+        
         .n8n-chat-widget-embed-root .chat-input button {
             background: linear-gradient(135deg, var(--chat--send-button-bg-start) 0%, var(--chat--send-button-bg-end) 100%);
             color: var(--chat--send-button-text-color);
@@ -348,7 +366,6 @@
             line-height: 44px;
             min-width: 70px;
             flex-shrink: 0;
-            /* Ensure content is centered if it's an icon or text */
             display: flex; 
             align-items: center; 
             justify-content: center;
@@ -531,15 +548,13 @@
                 }
             },
             style: {
-                // Ensure these defaults align with original script's base styles and CSS variables
                 primaryColor: '#854fff',
                 secondaryColor: '#6b3fd4',
-                backgroundColor: 'transparent', // Root level container background
-                internalBackgroundColor: '#ffffff', // Inner chat UI background
+                backgroundColor: 'transparent', 
+                internalBackgroundColor: '#ffffff', 
                 fontColor: '#333333',
                 fontSize: '14px',
                 
-                // Specific color overrides, if null will fall back to primary/secondary/internalBackground/fontColor
                 userBubble: {
                     bgColorStart: null,
                     bgColorEnd: null,
@@ -559,7 +574,7 @@
                     bgColor: null,
                     borderColor: 'rgba(133, 79, 255, 0.2)',
                     textColor: null,
-                    placeholderColor: null // Default based on fontColor
+                    placeholderColor: null 
                 },
                 suggestedQuestion: {
                     bgColor: 'rgba(133, 79, 255, 0.1)',
@@ -581,7 +596,7 @@
                 Object.keys(source).forEach(key => {
                     if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key]) && target[key] !== undefined) {
                         output[key] = mergeDeep(target[key], source[key]);
-                    } else if (source[key] !== undefined) { // Only override if source property exists
+                    } else if (source[key] !== undefined) { 
                         output[key] = source[key];
                     }
                 });
@@ -592,7 +607,6 @@
         const config = mergeDeep(defaultConfig, window.ChatWidgetEmbedConfig || {});
 
         // Apply derived defaults for style properties if not explicitly set
-        // This ensures they inherit from main primary/secondary/font/internal colors
         config.style.userBubble.bgColorStart = config.style.userBubble.bgColorStart || config.style.primaryColor;
         config.style.userBubble.bgColorEnd = config.style.userBubble.bgColorEnd || config.style.secondaryColor;
         config.style.botBubble.bgColor = config.style.botBubble.bgColor || config.style.internalBackgroundColor;
@@ -601,7 +615,6 @@
         config.style.sendButton.bgColorEnd = config.style.sendButton.bgColorEnd || config.style.secondaryColor;
         config.style.input.bgColor = config.style.input.bgColor || config.style.internalBackgroundColor;
         config.style.input.textColor = config.style.input.textColor || config.style.fontColor;
-        // Generate placeholder color based on fontColor if no specific override
         if (!config.style.input.placeholderColor) {
             const hexToRgb = hex => {
                 const r = parseInt(hex.slice(1, 3), 16);
@@ -704,9 +717,9 @@
         const sendButton = embedContainer.querySelector('button[type="submit"]');
         const suggestedQuestionsContainer = embedContainer.querySelector('.suggested-questions');
         
-        // Store the initial content of the send button, which is assumed to be your icon
-        const initialSendButtonContent = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
-        sendButton.innerHTML = initialSendButtonContent; // Set initial icon
+        // Define send button default text
+        const sendButtonDefaultText = 'Send';
+        sendButton.textContent = sendButtonDefaultText; // Set initial text
 
         // Helper to scroll to bottom of messages
         const scrollToBottom = () => {
@@ -721,7 +734,6 @@
         function processMessageContent(content, isBot = true) {
             content = (content || '').trim(); // Ensure content is a string and trim
             
-            // Check if marked and DOMPurify are loaded AND markdown is enabled for bots
             if (!isBot || !config.markdown.enabled || typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
                 return { type: 'text', content: content };
             }
@@ -732,7 +744,6 @@
                     finalHtml = DOMPurify.sanitize(finalHtml);
                 }
                 
-                // Remove trailing empty paragraphs and line breaks as per original logic
                 finalHtml = finalHtml.trim()
                     .replace(/<p>\s*<\/p>\s*$/gi, '')
                     .replace(/<br\s*\/?>\s*$/gi, '');
@@ -746,19 +757,16 @@
 
         async function startNewConversation() {
             currentSessionId = generateUUID();
-            // This payload matches the original bubble widget's start function
             const data = [{
                 action: "loadPreviousSession", 
                 sessionId: currentSessionId,
                 route: config.webhook.route,
-                // The original code uses an empty userId, so we'll maintain that
                 metadata: {
                     userId: "" 
                 }
             }];
 
             try {
-                // Toggle UI visibility
                 initialState.style.display = 'none';
                 chatInterface.classList.add('active');
 
@@ -779,10 +787,9 @@
                 const botMessageDiv = document.createElement('div');
                 botMessageDiv.className = 'chat-message bot';
                 
-                // Ensure message processing handles both array and direct object responses
                 const messageOutput = (Array.isArray(responseData) && responseData.length > 0 && responseData[0].output) ? 
                                       responseData[0].output : 
-                                      responseData.output || 'Hello, how can I assist you today?'; // Fallback message
+                                      responseData.output || 'Hello, how can I assist you today?';
                 
                 const processed = processMessageContent(messageOutput, true);
                 
@@ -795,22 +802,20 @@
                 messagesContainer.appendChild(botMessageDiv);
                 scrollToBottom();
 
-                // Render suggested questions if they exist
                  if (config.suggestedQuestions && config.suggestedQuestions.length > 0) {
                      renderSuggestedQuestions(config.suggestedQuestions);
                  }
 
-                textarea.focus(); // Focus input after starting chat
+                textarea.focus();
             } catch (error) {
                 console.error('Error starting new conversation:', error);
-                // Display error message in chat interface
-                if (chatInterface.classList.contains('active')) { // Only add if chat interface is visible
+                if (chatInterface.classList.contains('active')) {
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'chat-message bot';
                     errorDiv.textContent = 'Sorry, I\'m having trouble starting the chat. Please try again later.';
                     messagesContainer.appendChild(errorDiv);
                     scrollToBottom();
-                } else { // Fallback if chat interface not yet active (e.g., immediate network error)
+                } else {
                     alert('Could not start chat: ' + error.message);
                 }
             }
@@ -820,11 +825,13 @@
             // Disable input elements and indicate loading state
             sendButton.disabled = true;
             textarea.disabled = true;
+            if (suggestedQuestionsContainer) { // Check if container exists before disabling
+                suggestedQuestionsContainer.classList.add('disabled'); 
+            }
             sendButton.style.opacity = '0.6';
             sendButton.style.cursor = 'not-allowed';
             sendButton.textContent = 'Sending...'; // Temporary text while sending
 
-            // This payload matches the original bubble widget's send function
             const messageData = {
                 action: "sendMessage",
                 sessionId: currentSessionId,
@@ -835,7 +842,6 @@
                 }
             };
 
-            // Display user message immediately
             const userMessageDiv = document.createElement('div');
             userMessageDiv.className = 'chat-message user';
             userMessageDiv.textContent = message;
@@ -864,15 +870,14 @@
 
                 const data = await response.json();
                 
-                typingIndicator.remove(); // Remove typing indicator
+                typingIndicator.remove(); 
                 
                 const botMessageDiv = document.createElement('div');
                 botMessageDiv.className = 'chat-message bot';
                 
-                // Ensure message processing handles both array and direct object responses
                 const messageOutput = (Array.isArray(data) && data.length > 0 && data[0].output) ? 
                                       data[0].output : 
-                                      data.output || 'I\'m sorry, I encountered an issue. Can you please rephrase?'; // Fallback message
+                                      data.output || 'I\'m sorry, I encountered an issue. Can you please rephrase?';
                 
                 const processed = processMessageContent(messageOutput, true);
                 
@@ -886,9 +891,8 @@
 
             } catch (error) {
                 console.error('Error sending message:', error);
-                typingIndicator.remove(); // Ensure typing indicator is removed on error
+                typingIndicator.remove(); 
                 
-                // Display error message to the user
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'chat-message bot';
                 errorDiv.textContent = 'Sorry, there was an error processing your message. Please try again.';
@@ -898,42 +902,43 @@
                 // Re-enable input elements and restore original send button content
                 sendButton.disabled = false;
                 textarea.disabled = false;
+                if (suggestedQuestionsContainer) { // Check if container exists before re-enabling
+                    suggestedQuestionsContainer.classList.remove('disabled'); 
+                }
                 sendButton.style.opacity = '1';
                 sendButton.style.cursor = 'pointer';
-                sendButton.innerHTML = initialSendButtonContent; // IMPORTANT: Restore original SVG icon
+                sendButton.textContent = sendButtonDefaultText; // Restore "Send" text
                 textarea.focus(); 
                 
-                if (!isSuggested) { // Only clear if user typed, not from suggested click
+                if (!isSuggested) {
                     textarea.value = '';
                     textarea.style.height = 'auto'; // Reset height
                 }
             }
         }
         
-        // Function to render suggested question bubbles
         function renderSuggestedQuestions(questions) {
             if (!suggestedQuestionsContainer || !questions || questions.length === 0) {
                 return;
             }
-            suggestedQuestionsContainer.innerHTML = ''; // Clear existing bubbles
+            suggestedQuestionsContainer.innerHTML = ''; 
             questions.forEach((question, index) => {
                 const bubble = document.createElement('div');
                 bubble.className = 'suggested-question-bubble';
                 bubble.textContent = question;
-                bubble.dataset.index = index; // Used for potential future tracking, not removal here
+                bubble.dataset.index = index; 
                 bubble.addEventListener('click', () => {
-                    // Send the message and remove this specific bubble
                     sendMessage(question, true);
                     bubble.remove(); 
-                    // Hide the entire suggested questions container if all bubbles are gone
-                    if (suggestedQuestionsContainer.children.length === 0) {
-                         suggestedQuestionsContainer.style.display = 'none';
+                    if (suggestedQuestionsContainer.children.length === 0 && suggestedQuestionsContainer.parentElement) {
+                         // Find its parent and remove the entire container if no bubbles are left
+                         suggestedQuestionsContainer.parentElement.removeChild(suggestedQuestionsContainer);
                     }
                 });
                 suggestedQuestionsContainer.appendChild(bubble);
             });
-            suggestedQuestionsContainer.style.display = 'flex'; // Ensure container is visible
-            scrollToBottom(); // Scroll to show new bubbles
+            suggestedQuestionsContainer.style.display = 'flex'; 
+            scrollToBottom(); 
         }
 
         // Event listeners
@@ -947,7 +952,7 @@
         });
         
         textarea.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { // Send on Enter, allow Shift+Enter for new line
+            if (e.key === 'Enter' && !e.shiftKey) { 
                 e.preventDefault();
                 const message = textarea.value.trim();
                 if (message && currentSessionId) {
@@ -958,12 +963,11 @@
 
         // Auto-resize textarea while typing
         const adjustTextareaHeight = () => {
-            textarea.style.height = 'auto'; // Reset height to calculate correctly
-            // Limit height to a max of 5 lines, falling back to 100px if computed lineHeight is weird
+            textarea.style.height = 'auto'; 
             textarea.style.height = Math.min(textarea.scrollHeight, (parseInt(getComputedStyle(textarea).lineHeight) * 5) || 100) + 'px';
-            scrollToBottom(); // Keep current message in view
+            scrollToBottom(); 
         };
         textarea.addEventListener('input', adjustTextareaHeight);
-        adjustTextareaHeight(); // Call on init in case of pre-filled text (or to set initial height)
+        adjustTextareaHeight();
     }
 })();
