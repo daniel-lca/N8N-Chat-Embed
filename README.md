@@ -11,11 +11,20 @@ To embed the chat widget, you need to include a container `div`, the configurati
 ### HTML Snippet
 
 ```html
-<!-- The DIV where the chat widget will be embedded -->
-<!-- Place this div anywhere in your HTML -->
-<div id="my-chat-embed-area" style="width: 100%; height: 600px; border-radius: 12px; overflow: hidden;">
-    <!-- The chat widget will be rendered inside here -->
-</div>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: transparent;
+  }
+  #my-chat-embed-area {
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+</style>
+
+<div id="my-chat-embed-area"></div>
 
 <!-- Widget Configuration -->
 <script>
