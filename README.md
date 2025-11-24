@@ -38,8 +38,7 @@ To embed the chat widget, you need to include a container `div`, the configurati
     branding: {
       logo: '[YOUR LOGO URL]',
       name: 'YOUR COMPANY NAME',
-      welcomeText: 'Hi! How can we help you today?',
-      responseTimeText: 'We tipically answer right away',
+      welcomeMessage: 'Hi! How can we help you today?',
     },
     style: {
       primaryColor: '#4E76CC', // Main accent color

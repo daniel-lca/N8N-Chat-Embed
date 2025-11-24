@@ -1,5 +1,5 @@
 // Chat Widget Embed Script
-(function() {
+(function () {
     // Inject styles and define CSS variables
     const styles = `
         /* Root container for the embedded widget */
@@ -92,70 +92,13 @@
             color: var(--chat--color-font);
         }
 
-        /* Initial state screen (before chat starts) */
-        .n8n-chat-widget-embed-root .initial-state {
-            flex: 1; /* Takes up all available space */
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Center vertically */
-            align-items: center; /* Center horizontally */
-            padding: 20px;
-            text-align: center;
-        }
 
-        .n8n-chat-widget-embed-root .welcome-text {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--chat--color-font);
-            margin-bottom: 24px;
-            line-height: 1.3;
-        }
-
-        .n8n-chat-widget-embed-root .new-chat-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: auto;
-            max-width: 250px;
-            padding: 16px 24px;
-            background: linear-gradient(135deg, var(--chat--send-button-bg-start) 0%, var(--chat--send-button-bg-end) 100%);
-            color: var(--chat--send-button-text-color);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: transform 0.3s;
-            font-weight: 500;
-            font-family: inherit;
-            margin-bottom: 12px;
-        }
-
-        .n8n-chat-widget-embed-root .new-chat-btn:hover {
-            transform: scale(1.02);
-        }
-
-        .n8n-chat-widget-embed-root .message-icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .n8n-chat-widget-embed-root .response-text {
-            font-size: 14px;
-            color: var(--chat--color-font);
-            opacity: 0.7;
-            margin: 0;
-        }
 
         /* Active chat interface */
         .n8n-chat-widget-embed-root .chat-interface {
-            display: none; /* Hidden by default */
+            display: flex;
             flex-direction: column;
             height: 100%;
-        }
-
-        .n8n-chat-widget-embed-root .chat-interface.active {
-            display: flex; /* Shown when active */
         }
 
         .n8n-chat-widget-embed-root .chat-messages {
@@ -447,13 +390,7 @@
 
         /* Responsive adjustments for smaller embed sizes using container queries */
         @container (max-width: 480px) {
-            .n8n-chat-widget-embed-root .welcome-text {
-                font-size: 20px;
-            }
-            .n8n-chat-widget-embed-root .new-chat-btn {
-                padding: 12px 20px;
-                font-size: 14px;
-            }
+
             .n8n-chat-widget-embed-root .brand-header {
                 padding: 12px;
             }
@@ -540,8 +477,7 @@
             branding: {
                 logo: '',
                 name: '',
-                welcomeText: 'Hi 👋, how can we help?',
-                responseTimeText: 'We typically respond right away',
+                welcomeMessage: 'Hi 👋, how can we help?',
                 poweredBy: {
                     text: 'Powered by LowCode',
                     link: 'https://www.lowcode.agency'
@@ -550,11 +486,11 @@
             style: {
                 primaryColor: '#854fff',
                 secondaryColor: '#6b3fd4',
-                backgroundColor: 'transparent', 
-                internalBackgroundColor: '#ffffff', 
+                backgroundColor: 'transparent',
+                internalBackgroundColor: '#ffffff',
                 fontColor: '#333333',
                 fontSize: '14px',
-                
+
                 userBubble: {
                     bgColorStart: null,
                     bgColorEnd: null,
@@ -574,7 +510,7 @@
                     bgColor: null,
                     borderColor: 'rgba(133, 79, 255, 0.2)',
                     textColor: null,
-                    placeholderColor: null 
+                    placeholderColor: null
                 },
                 suggestedQuestion: {
                     bgColor: 'rgba(133, 79, 255, 0.1)',
@@ -596,7 +532,7 @@
                 Object.keys(source).forEach(key => {
                     if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key]) && target[key] !== undefined) {
                         output[key] = mergeDeep(target[key], source[key]);
-                    } else if (source[key] !== undefined) { 
+                    } else if (source[key] !== undefined) {
                         output[key] = source[key];
                     }
                 });
@@ -634,7 +570,7 @@
             console.error(`N8N Chat Widget Embed: Target element with ID '${config.targetElementId}' not found. Please ensure this ID exists in your HTML.`);
             return;
         }
-        
+
         // Create the main widget container element
         const widgetContainer = document.createElement('div');
         widgetContainer.className = 'n8n-chat-widget-embed-root';
@@ -672,19 +608,6 @@
         embedContainer.className = 'embed-container';
 
         // HTML structure for the initial welcome screen
-        const initialStateHTML = `
-            <div class="initial-state">
-                <h2 class="welcome-text">${config.branding.welcomeText}</h2>
-                <button class="new-chat-btn">
-                    <svg class="message-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/>
-                    </svg>
-                    Send us a message
-                </button>
-                <p class="response-text">${config.branding.responseTimeText}</p>
-            </div>
-        `;
-
         // HTML structure for the active chat interface
         const chatInterfaceHTML = `
             <div class="chat-interface">
@@ -704,19 +627,17 @@
             </div>
         `;
 
-        embedContainer.innerHTML = initialStateHTML + chatInterfaceHTML;
+        embedContainer.innerHTML = chatInterfaceHTML;
         widgetContainer.appendChild(embedContainer);
         targetElement.appendChild(widgetContainer); // Append to the designated target element
 
         // Cache DOM elements
-        const newChatBtn = embedContainer.querySelector('.new-chat-btn');
-        const initialState = embedContainer.querySelector('.initial-state');
         const chatInterface = embedContainer.querySelector('.chat-interface');
         const messagesContainer = embedContainer.querySelector('.chat-messages');
         const textarea = embedContainer.querySelector('textarea');
         const sendButton = embedContainer.querySelector('button[type="submit"]');
         const suggestedQuestionsContainer = embedContainer.querySelector('.suggested-questions');
-        
+
         // Define send button default text
         const sendButtonDefaultText = 'Send';
         sendButton.textContent = sendButtonDefaultText; // Set initial text
@@ -733,7 +654,7 @@
         // Function to process message content (markdown or plain text)
         function processMessageContent(content, isBot = true) {
             content = (content || '').trim(); // Ensure content is a string and trim
-            
+
             if (!isBot || !config.markdown.enabled || typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
                 return { type: 'text', content: content };
             }
@@ -743,11 +664,11 @@
                 if (config.markdown.sanitize) {
                     finalHtml = DOMPurify.sanitize(finalHtml);
                 }
-                
+
                 finalHtml = finalHtml.trim()
                     .replace(/<p>\s*<\/p>\s*$/gi, '')
                     .replace(/<br\s*\/?>\s*$/gi, '');
-                
+
                 return { type: 'html', content: finalHtml };
             } catch (error) {
                 console.error('Error parsing markdown:', error);
@@ -755,78 +676,38 @@
             }
         }
 
-        async function startNewConversation() {
+        function initializeChat() {
             currentSessionId = generateUUID();
-            const data = [{
-                action: "loadPreviousSession", 
-                sessionId: currentSessionId,
-                route: config.webhook.route,
-                metadata: {
-                    userId: "" 
-                }
-            }];
 
-            try {
-                initialState.style.display = 'none';
-                chatInterface.classList.add('active');
+            // Add welcome message
+            const botMessageDiv = document.createElement('div');
+            botMessageDiv.className = 'chat-message bot';
 
-                const response = await fetch(config.webhook.url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
+            const processed = processMessageContent(config.branding.welcomeMessage, true);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+            if (processed.type === 'html') {
+                botMessageDiv.innerHTML = processed.content;
+            } else {
+                botMessageDiv.textContent = processed.content;
+            }
 
-                const responseData = await response.json();
-                
-                const botMessageDiv = document.createElement('div');
-                botMessageDiv.className = 'chat-message bot';
-                
-                const messageOutput = (Array.isArray(responseData) && responseData.length > 0 && responseData[0].output) ? 
-                                      responseData[0].output : 
-                                      responseData.output || 'Hello, how can I assist you today?';
-                
-                const processed = processMessageContent(messageOutput, true);
-                
-                if (processed.type === 'html') {
-                    botMessageDiv.innerHTML = processed.content;
-                } else {
-                    botMessageDiv.textContent = processed.content;
-                }
-                
-                messagesContainer.appendChild(botMessageDiv);
-                scrollToBottom();
+            messagesContainer.appendChild(botMessageDiv);
+            scrollToBottom();
 
-                 if (config.suggestedQuestions && config.suggestedQuestions.length > 0) {
-                     renderSuggestedQuestions(config.suggestedQuestions);
-                 }
-
-                textarea.focus();
-            } catch (error) {
-                console.error('Error starting new conversation:', error);
-                if (chatInterface.classList.contains('active')) {
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'chat-message bot';
-                    errorDiv.textContent = 'Sorry, I\'m having trouble starting the chat. Please try again later.';
-                    messagesContainer.appendChild(errorDiv);
-                    scrollToBottom();
-                } else {
-                    alert('Could not start chat: ' + error.message);
-                }
+            if (config.suggestedQuestions && config.suggestedQuestions.length > 0) {
+                renderSuggestedQuestions(config.suggestedQuestions);
             }
         }
+
+        // Initialize chat immediately
+        initializeChat();
 
         async function sendMessage(message, isSuggested = false) {
             // Disable input elements and indicate loading state
             sendButton.disabled = true;
             textarea.disabled = true;
             if (suggestedQuestionsContainer) { // Check if container exists before disabling
-                suggestedQuestionsContainer.classList.add('disabled'); 
+                suggestedQuestionsContainer.classList.add('disabled');
             }
             sendButton.style.opacity = '0.6';
             sendButton.style.cursor = 'not-allowed';
@@ -863,24 +744,24 @@
                     },
                     body: JSON.stringify(messageData)
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
-                
-                typingIndicator.remove(); 
-                
+
+                typingIndicator.remove();
+
                 const botMessageDiv = document.createElement('div');
                 botMessageDiv.className = 'chat-message bot';
-                
-                const messageOutput = (Array.isArray(data) && data.length > 0 && data[0].output) ? 
-                                      data[0].output : 
-                                      data.output || 'I\'m sorry, I encountered an issue. Can you please rephrase?';
-                
+
+                const messageOutput = (Array.isArray(data) && data.length > 0 && data[0].output) ?
+                    data[0].output :
+                    data.output || 'I\'m sorry, I encountered an issue. Can you please rephrase?';
+
                 const processed = processMessageContent(messageOutput, true);
-                
+
                 if (processed.type === 'html') {
                     botMessageDiv.innerHTML = processed.content;
                 } else {
@@ -891,8 +772,8 @@
 
             } catch (error) {
                 console.error('Error sending message:', error);
-                typingIndicator.remove(); 
-                
+                typingIndicator.remove();
+
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'chat-message bot';
                 errorDiv.textContent = 'Sorry, there was an error processing your message. Please try again.';
@@ -903,56 +784,56 @@
                 sendButton.disabled = false;
                 textarea.disabled = false;
                 if (suggestedQuestionsContainer) { // Check if container exists before re-enabling
-                    suggestedQuestionsContainer.classList.remove('disabled'); 
+                    suggestedQuestionsContainer.classList.remove('disabled');
                 }
                 sendButton.style.opacity = '1';
                 sendButton.style.cursor = 'pointer';
                 sendButton.textContent = sendButtonDefaultText; // Restore "Send" text
-                textarea.focus(); 
-                
+                textarea.focus();
+
                 if (!isSuggested) {
                     textarea.value = '';
                     textarea.style.height = 'auto'; // Reset height
                 }
             }
         }
-        
+
         function renderSuggestedQuestions(questions) {
             if (!suggestedQuestionsContainer || !questions || questions.length === 0) {
                 return;
             }
-            suggestedQuestionsContainer.innerHTML = ''; 
+            suggestedQuestionsContainer.innerHTML = '';
             questions.forEach((question, index) => {
                 const bubble = document.createElement('div');
                 bubble.className = 'suggested-question-bubble';
                 bubble.textContent = question;
-                bubble.dataset.index = index; 
+                bubble.dataset.index = index;
                 bubble.addEventListener('click', () => {
                     sendMessage(question, true);
-                    bubble.remove(); 
+                    bubble.remove();
                     if (suggestedQuestionsContainer.children.length === 0 && suggestedQuestionsContainer.parentElement) {
-                         // Find its parent and remove the entire container if no bubbles are left
-                         suggestedQuestionsContainer.parentElement.removeChild(suggestedQuestionsContainer);
+                        // Find its parent and remove the entire container if no bubbles are left
+                        suggestedQuestionsContainer.parentElement.removeChild(suggestedQuestionsContainer);
                     }
                 });
                 suggestedQuestionsContainer.appendChild(bubble);
             });
-            suggestedQuestionsContainer.style.display = 'flex'; 
-            scrollToBottom(); 
+            suggestedQuestionsContainer.style.display = 'flex';
+            scrollToBottom();
         }
 
         // Event listeners
-        newChatBtn.addEventListener('click', startNewConversation);
-        
+
+
         sendButton.addEventListener('click', () => {
             const message = textarea.value.trim();
             if (message && currentSessionId) {
                 sendMessage(message);
             }
         });
-        
+
         textarea.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { 
+            if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 const message = textarea.value.trim();
                 if (message && currentSessionId) {
@@ -963,9 +844,9 @@
 
         // Auto-resize textarea while typing
         const adjustTextareaHeight = () => {
-            textarea.style.height = 'auto'; 
+            textarea.style.height = 'auto';
             textarea.style.height = Math.min(textarea.scrollHeight, (parseInt(getComputedStyle(textarea).lineHeight) * 5) || 100) + 'px';
-            scrollToBottom(); 
+            scrollToBottom();
         };
         textarea.addEventListener('input', adjustTextareaHeight);
         adjustTextareaHeight();
