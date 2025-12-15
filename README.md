@@ -1,147 +1,371 @@
 # N8N Chat Embed 💬
 
-A minimal, highly customizable chat widget designed for easy embedding on any website. It connects to your **n8n automation flows** via a webhook, making it simple to build AI-powered conversational experiences.
+A minimal, highly customizable chat embed designed to be placed inside any container on your website.
+It connects directly to your n8n workflows via a webhook and supports advanced UI and behavior configuration.
 
 ---
 
-## Quick Usage (CDN)
+## quick usage (CDN)
 
-To add the chat widget to your website, include a container `div`, the configuration `<script>`, and the widget script itself. Place this code snippet anywhere in the `<body>` of your HTML page.
+Include a container element, define the configuration object, and load the script.
+Place this code anywhere inside the <body> of your page.
 
-### The Installation Template
-
-Use the following code block in your HTML.
-
-**Remember to replace the placeholders!**
+### minimal installation template
 
 ```html
-<style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    background: transparent;
-  }
-  #n8n-chat-embed {
-    height: 100%;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-</style>
+<!--
+  Ensure you have a <div> with the ID "n8n-chat-embed" in your HTML.
+  The chat will be created inside that element.
+-->
 
-<div id="n8n-chat-embed"></div>
-
-<!-- Widget Configuration -->
 <script>
   window.ChatWidgetEmbedConfig = {
-    targetElementId: 'n8n-chat-embed', // IMPORTANT: Must match the ID of your div
+    targetElementId: 'n8n-chat-embed',
     webhook: {
-      url: 'YOUR_N8N_WEBHOOK_URL_HERE',
+      url: 'YOUR_N8N_WEBHOOK_URL',
       route: 'general'
     },
     branding: {
-      logo: 'YOUR_LOGO_URL_HERE',
+      logo: 'YOUR_LOGO_URL',
       name: 'YOUR COMPANY NAME',
       welcomeMessage: 'Hi! How can we help you today?',
-      chatInputPlaceholder: 'Type your message here...', // Optional
-      poweredBy: {
-        text: 'Powered by LowCode',
-        link: 'https://www.lowcode.agency'
-      }
+      chatInputPlaceholder: 'Type your message here...'
     },
     style: {
       primaryColor: '#854fff',
       secondaryColor: '#6b3fd4',
-      backgroundColor: 'transparent', // Root container background
-      internalBackgroundColor: '#ffffff', // Chat UI background
+      backgroundColor: 'transparent',
+      internalBackgroundColor: '#ffffff',
       fontColor: '#333333',
-      fontSize: '14px',
+      fontSize: '14px'
     }
   };
 </script>
 
-<script src="https://cdn.jsdelivr.net/gh/daniel-lca/N8N-Chat-Embed@master/chat-embed.js"></script>
-<!-- End Widget Configuration -->
+<!-- IMPORTANT: replace @v1.0.0 with your desired release tag -->
+<script src="https://cdn.jsdelivr.net/gh/daniel-lca/N8N-Chat-Embed@v1.0.0/chat-embed.js"></script>
 ```
 
-## Configuration Reference
 
-The `window.ChatWidgetEmbedConfig` object allows you to customize every aspect of the widget.
+---
 
-### Core Configuration
-| Property | Description |
-|----------|-------------|
-| `targetElementId` | **Required**. The ID of the `div` where the widget will be rendered. |
-| `webhook.url` | **Required**. Your n8n production webhook URL. |
-| `webhook.route` | Optional. A route identifier to handle different flows in your n8n workflow. |
+## full configuration (all options)
 
-### Branding
-| Property | Description |
-|----------|-------------|
-| `branding.logo` | URL to your logo image (PNG, SVG, etc.). |
-| `branding.name` | Your company or bot name. |
-| `branding.welcomeMessage` | The initial message shown by the bot. |
-| `branding.chatInputPlaceholder` | Placeholder text for the input field. |
-| `branding.poweredBy` | Object with `text` and `link` to customize the footer. |
+This example includes every supported configuration option.
+Copy it, then remove anything you don’t need.
 
-### Main Styling
-| Property | Description |
-|----------|-------------|
-| `style.primaryColor` | Main accent color (used for user bubbles, send button). |
-| `style.secondaryColor` | Secondary accent color for gradients. |
-| `style.backgroundColor` | Background of the root container (default: `transparent`). |
-| `style.internalBackgroundColor` | Background of the chat interface itself (default: `#ffffff`). |
-| `style.fontColor` | Main text color. |
-| `style.fontSize` | Base font size (default: `14px`). |
+```html
+<script>
+  window.ChatWidgetEmbedConfig = {
+    // required: must match the container div id
+    targetElementId: 'n8n-chat-embed',
 
-### Component Styling
-You can further granularly style specific components. Nested under `style`:
+    webhook: {
+      url: 'YOUR_N8N_WEBHOOK_URL',
+      route: 'general'
+    },
 
-#### User Bubble (`style.userBubble`)
-| Property | Description |
-|----------|-------------|
-| `bgColorStart` | Gradient start color (defaults to `primaryColor`). |
-| `bgColorEnd` | Gradient end color (defaults to `secondaryColor`). |
-| `textColor` | Text color (defaults to `white`). |
+    branding: {
+      logo: 'YOUR_LOGO_URL',
+      name: 'YOUR COMPANY NAME',
+      welcomeMessage: 'Hi! How can we help you today?',
+      chatInputPlaceholder: 'Type your message here...'
+    },
 
-#### Bot Bubble (`style.botBubble`)
-| Property | Description |
-|----------|-------------|
-| `bgColor` | Background color (defaults to `internalBackgroundColor`). |
-| `borderColor` | Border color. |
-| `textColor` | Text color (defaults to `fontColor`). |
+    style: {
+      primaryColor: '#4E76CC',
+      secondaryColor: '#1E50BD',
 
-#### Send Button (`style.sendButton`)
-| Property | Description |
-|----------|-------------|
-| `bgColorStart` | Gradient start color (defaults to `primaryColor`). |
-| `bgColorEnd` | Gradient end color (defaults to `secondaryColor`). |
-| `textColor` | Text color (defaults to `white`). |
+      // background of the root container div (#n8n-chat-embed)
+      backgroundColor: 'transparent',
 
-#### Input Field (`style.input`)
-| Property | Description |
-|----------|-------------|
-| `bgColor` | Background color. |
-| `borderColor` | Border color. |
-| `textColor` | Text color. |
-| `placeholderColor` | Color of the placeholder text. |
+      // background of the internal chat UI (header, message area, input)
+      internalBackgroundColor: 'transparent',
 
-#### Suggested Questions (`style.suggestedQuestion`)
-| Property | Description |
-|----------|-------------|
-| `bgColor` | Background color. |
-| `borderColor` | Border color. |
-| `textColor` | Text color. |
+      fontColor: '#333333',
+      fontSize: '16px',
 
-### Markdown
-| Property | Description |
-|----------|-------------|
-| `markdown.enabled` | Enable/disable markdown rendering (default: `true`). |
-| `markdown.sanitize` | Enable/disable HTML sanitization (default: `true`). |
+      // style.userBubble.*
+      userBubble: {
+        bgColorStart: null, // if null, uses primaryColor
+        bgColorEnd: null,   // if null, uses secondaryColor
+        textColor: 'white'
+      },
 
-### Suggested Questions
-Initialize the chat with quick-reply options.
+      // style.botBubble.*
+      botBubble: {
+        bgColor: '#f0f2f5',
+        borderColor: '#e0e2e5',
+        textColor: '#333333'
+      },
 
-```javascript
+      // style.sendButton.*
+      sendButton: {
+        bgColorStart: null, // if null, uses primaryColor
+        bgColorEnd: null,   // if null, uses secondaryColor
+        textColor: 'white'
+      },
+
+      // style.input.*
+      input: {
+        bgColor: null,            // if null, uses internalBackgroundColor
+        borderColor: '#d0d2d5',
+        textColor: null,          // if null, uses fontColor
+        placeholderColor: null    // if null, derived from fontColor with opacity
+      },
+
+      // style.suggestedQuestion.*
+      suggestedQuestion: {
+        bgColor: '#e6f0ff',
+        borderColor: '#cce0ff',
+        textColor: '#1E50BD'
+      }
+    },
+
+    markdown: {
+      enabled: true,
+      sanitize: true
+    },
+
+    suggestedQuestions: [
+      'What can you help me with?',
+      'How does this work?'
+    ]
+  };
+</script>
+```
+
+---
+
+## configuration reference (where each option goes)
+
+Everything lives under:
+
+- window.ChatWidgetEmbedConfig
+  - webhook
+  - branding
+  - style
+  - markdown
+  - suggestedQuestions
+
+Below you’ll see each property written as a full path so you know exactly where to place it.
+
+### core
+
+- ChatWidgetEmbedConfig.targetElementId
+  - required. the id of your container div.
+
+- ChatWidgetEmbedConfig.webhook.url
+  - required. your n8n webhook URL.
+
+- ChatWidgetEmbedConfig.webhook.route
+  - optional. route identifier (string) to select a flow in n8n.
+
+### branding (ChatWidgetEmbedConfig.branding.*)
+
+- ChatWidgetEmbedConfig.branding.logo
+  - URL to your logo image.
+
+- ChatWidgetEmbedConfig.branding.name
+  - chat/company/bot name.
+
+- ChatWidgetEmbedConfig.branding.welcomeMessage
+  - initial bot message.
+
+- ChatWidgetEmbedConfig.branding.chatInputPlaceholder
+  - placeholder text for the input field.
+
+### main styling (ChatWidgetEmbedConfig.style.*)
+
+- ChatWidgetEmbedConfig.style.primaryColor
+  - main accent color (used as fallback for gradients).
+
+- ChatWidgetEmbedConfig.style.secondaryColor
+  - secondary accent color (used as fallback for gradients).
+
+- ChatWidgetEmbedConfig.style.backgroundColor
+  - background of the root container element (the div you embed into).
+
+- ChatWidgetEmbedConfig.style.internalBackgroundColor
+  - background of the internal chat UI.
+
+- ChatWidgetEmbedConfig.style.fontColor
+  - default text color.
+
+- ChatWidgetEmbedConfig.style.fontSize
+  - base font size.
+
+### component styling (nested inside ChatWidgetEmbedConfig.style)
+
+#### user bubble (ChatWidgetEmbedConfig.style.userBubble.*)
+
+Put these inside:
+ChatWidgetEmbedConfig.style.userBubble = { ... }
+
+- ChatWidgetEmbedConfig.style.userBubble.bgColorStart
+  - gradient start color.
+  - if null, uses ChatWidgetEmbedConfig.style.primaryColor.
+
+- ChatWidgetEmbedConfig.style.userBubble.bgColorEnd
+  - gradient end color.
+  - if null, uses ChatWidgetEmbedConfig.style.secondaryColor.
+
+- ChatWidgetEmbedConfig.style.userBubble.textColor
+  - text color inside user bubbles.
+
+Example:
+
+```js
+style: {
+  userBubble: {
+    bgColorStart: '#111111',
+    bgColorEnd: '#333333',
+    textColor: '#ffffff'
+  }
+}
+```
+
+#### bot bubble (ChatWidgetEmbedConfig.style.botBubble.*)
+
+Put these inside:
+ChatWidgetEmbedConfig.style.botBubble = { ... }
+
+- ChatWidgetEmbedConfig.style.botBubble.bgColor
+  - background color of bot bubbles.
+
+- ChatWidgetEmbedConfig.style.botBubble.borderColor
+  - border color of bot bubbles.
+
+- ChatWidgetEmbedConfig.style.botBubble.textColor
+  - text color inside bot bubbles.
+
+Example:
+
+```js
+style: {
+  botBubble: {
+    bgColor: '#f0f2f5',
+    borderColor: '#e0e2e5',
+    textColor: '#333333'
+  }
+}
+```
+
+#### send button (ChatWidgetEmbedConfig.style.sendButton.*)
+
+Put these inside:
+ChatWidgetEmbedConfig.style.sendButton = { ... }
+
+- ChatWidgetEmbedConfig.style.sendButton.bgColorStart
+  - gradient start color.
+  - if null, uses ChatWidgetEmbedConfig.style.primaryColor.
+
+- ChatWidgetEmbedConfig.style.sendButton.bgColorEnd
+  - gradient end color.
+  - if null, uses ChatWidgetEmbedConfig.style.secondaryColor.
+
+- ChatWidgetEmbedConfig.style.sendButton.textColor
+  - text/icon color on the send button.
+
+Example:
+
+```js
+style: {
+  sendButton: {
+    bgColorStart: null,
+    bgColorEnd: null,
+    textColor: 'white'
+  }
+}
+```
+
+#### input field (ChatWidgetEmbedConfig.style.input.*)
+
+Put these inside:
+ChatWidgetEmbedConfig.style.input = { ... }
+
+- ChatWidgetEmbedConfig.style.input.bgColor
+  - input background color.
+  - if null, uses ChatWidgetEmbedConfig.style.internalBackgroundColor.
+
+- ChatWidgetEmbedConfig.style.input.borderColor
+  - input border color.
+
+- ChatWidgetEmbedConfig.style.input.textColor
+  - input text color.
+  - if null, uses ChatWidgetEmbedConfig.style.fontColor.
+
+- ChatWidgetEmbedConfig.style.input.placeholderColor
+  - placeholder text color.
+  - if null, derived from ChatWidgetEmbedConfig.style.fontColor with opacity.
+
+Example:
+
+```js
+style: {
+  input: {
+    bgColor: '#ffffff',
+    borderColor: '#d0d2d5',
+    textColor: '#111111',
+    placeholderColor: '#777777'
+  }
+}
+```
+
+#### suggested questions (ChatWidgetEmbedConfig.style.suggestedQuestion.*)
+
+Put these inside:
+ChatWidgetEmbedConfig.style.suggestedQuestion = { ... }
+
+- ChatWidgetEmbedConfig.style.suggestedQuestion.bgColor
+  - background color of the suggested question bubbles.
+
+- ChatWidgetEmbedConfig.style.suggestedQuestion.borderColor
+  - border color of the suggested question bubbles.
+
+- ChatWidgetEmbedConfig.style.suggestedQuestion.textColor
+  - text color of the suggested question bubbles.
+
+Example:
+
+```js
+style: {
+  suggestedQuestion: {
+    bgColor: '#e6f0ff',
+    borderColor: '#cce0ff',
+    textColor: '#1E50BD'
+  }
+}
+```
+
+### markdown (ChatWidgetEmbedConfig.markdown.*)
+
+Put these inside:
+ChatWidgetEmbedConfig.markdown = { ... }
+
+- ChatWidgetEmbedConfig.markdown.enabled
+  - enable/disable markdown rendering.
+
+- ChatWidgetEmbedConfig.markdown.sanitize
+  - enable/disable HTML sanitization.
+
+Example:
+
+```js
+markdown: {
+  enabled: true,
+  sanitize: true
+}
+```
+
+### suggested questions list (ChatWidgetEmbedConfig.suggestedQuestions)
+
+Put this at the top level:
+ChatWidgetEmbedConfig.suggestedQuestions = [ ... ]
+
+Example:
+
+```js
 suggestedQuestions: [
   "What is your pricing?",
   "How do I duplicate a template?"
