@@ -152,66 +152,50 @@ Below you’ll see each property written as a full path so you know exactly wher
 
 ### core
 
-- ChatWidgetEmbedConfig.targetElementId
-  - required. the id of your container div.
 
-- ChatWidgetEmbedConfig.webhook.url
-  - required. your n8n webhook URL.
+| Property | Description |
+|----------|-------------|
+| `targetElementId` | **Required**. The ID of the `div` where the widget will be rendered. |
+| `webhook.url` | **Required**. Your n8n production webhook URL. |
+| `webhook.route` | Optional. A route identifier to handle different flows in your n8n workflow. |
 
-- ChatWidgetEmbedConfig.webhook.route
-  - optional. route identifier (string) to select a flow in n8n.
 
 ### branding (ChatWidgetEmbedConfig.branding.*)
 
-- ChatWidgetEmbedConfig.branding.logo
-  - URL to your logo image.
 
-- ChatWidgetEmbedConfig.branding.name
-  - chat/company/bot name.
+| Property | Description |
+|----------|-------------|
+| `logo` | URL to your logo image. |
+| `name` | Chat/company/bot name. |
+| `welcomeMessage` | Initial bot message. |
+| `chatInputPlaceholder` | Placeholder text for the input field. |
 
-- ChatWidgetEmbedConfig.branding.welcomeMessage
-  - initial bot message.
-
-- ChatWidgetEmbedConfig.branding.chatInputPlaceholder
-  - placeholder text for the input field.
 
 ### main styling (ChatWidgetEmbedConfig.style.*)
 
-- ChatWidgetEmbedConfig.style.primaryColor
-  - main accent color (used as fallback for gradients).
 
-- ChatWidgetEmbedConfig.style.secondaryColor
-  - secondary accent color (used as fallback for gradients).
+| Property | Description |
+|----------|-------------|
+| `primaryColor` | Main accent color (used as fallback for gradients). |
+| `secondaryColor` | Secondary accent color (used as fallback for gradients). |
+| `backgroundColor` | Background of the root container element. |
+| `internalBackgroundColor` | Background of the internal chat UI. |
+| `fontColor` | Default text color. |
+| `fontSize` | Base font size. |
 
-- ChatWidgetEmbedConfig.style.backgroundColor
-  - background of the root container element (the div you embed into).
-
-- ChatWidgetEmbedConfig.style.internalBackgroundColor
-  - background of the internal chat UI.
-
-- ChatWidgetEmbedConfig.style.fontColor
-  - default text color.
-
-- ChatWidgetEmbedConfig.style.fontSize
-  - base font size.
 
 ### component styling (nested inside ChatWidgetEmbedConfig.style)
 
 #### user bubble (ChatWidgetEmbedConfig.style.userBubble.*)
 
-Put these inside:
-ChatWidgetEmbedConfig.style.userBubble = { ... }
+Put these inside: `ChatWidgetEmbedConfig.style.userBubble = { ... }`
 
-- ChatWidgetEmbedConfig.style.userBubble.bgColorStart
-  - gradient start color.
-  - if null, uses ChatWidgetEmbedConfig.style.primaryColor.
+| Property | Description |
+|----------|-------------|
+| `bgColorStart` | Gradient start color. If null, uses `primaryColor`. |
+| `bgColorEnd` | Gradient end color. If null, uses `secondaryColor`. |
+| `textColor` | Text color inside user bubbles. |
 
-- ChatWidgetEmbedConfig.style.userBubble.bgColorEnd
-  - gradient end color.
-  - if null, uses ChatWidgetEmbedConfig.style.secondaryColor.
-
-- ChatWidgetEmbedConfig.style.userBubble.textColor
-  - text color inside user bubbles.
 
 Example:
 
@@ -227,17 +211,14 @@ style: {
 
 #### bot bubble (ChatWidgetEmbedConfig.style.botBubble.*)
 
-Put these inside:
-ChatWidgetEmbedConfig.style.botBubble = { ... }
+Put these inside: `ChatWidgetEmbedConfig.style.botBubble = { ... }`
 
-- ChatWidgetEmbedConfig.style.botBubble.bgColor
-  - background color of bot bubbles.
+| Property | Description |
+|----------|-------------|
+| `bgColor` | Background color of bot bubbles. |
+| `borderColor` | Border color of bot bubbles. |
+| `textColor` | Text color inside bot bubbles. |
 
-- ChatWidgetEmbedConfig.style.botBubble.borderColor
-  - border color of bot bubbles.
-
-- ChatWidgetEmbedConfig.style.botBubble.textColor
-  - text color inside bot bubbles.
 
 Example:
 
@@ -253,19 +234,14 @@ style: {
 
 #### send button (ChatWidgetEmbedConfig.style.sendButton.*)
 
-Put these inside:
-ChatWidgetEmbedConfig.style.sendButton = { ... }
+Put these inside: `ChatWidgetEmbedConfig.style.sendButton = { ... }`
 
-- ChatWidgetEmbedConfig.style.sendButton.bgColorStart
-  - gradient start color.
-  - if null, uses ChatWidgetEmbedConfig.style.primaryColor.
+| Property | Description |
+|----------|-------------|
+| `bgColorStart` | Gradient start color. If null, uses `primaryColor`. |
+| `bgColorEnd` | Gradient end color. If null, uses `secondaryColor`. |
+| `textColor` | Text/icon color on the send button. |
 
-- ChatWidgetEmbedConfig.style.sendButton.bgColorEnd
-  - gradient end color.
-  - if null, uses ChatWidgetEmbedConfig.style.secondaryColor.
-
-- ChatWidgetEmbedConfig.style.sendButton.textColor
-  - text/icon color on the send button.
 
 Example:
 
@@ -281,23 +257,15 @@ style: {
 
 #### input field (ChatWidgetEmbedConfig.style.input.*)
 
-Put these inside:
-ChatWidgetEmbedConfig.style.input = { ... }
+Put these inside: `ChatWidgetEmbedConfig.style.input = { ... }`
 
-- ChatWidgetEmbedConfig.style.input.bgColor
-  - input background color.
-  - if null, uses ChatWidgetEmbedConfig.style.internalBackgroundColor.
+| Property | Description |
+|----------|-------------|
+| `bgColor` | Input background color. If null, uses `internalBackgroundColor`. |
+| `borderColor` | Input border color. |
+| `textColor` | Input text color. If null, uses `fontColor`. |
+| `placeholderColor` | Placeholder text color. If null, derived from `fontColor`. |
 
-- ChatWidgetEmbedConfig.style.input.borderColor
-  - input border color.
-
-- ChatWidgetEmbedConfig.style.input.textColor
-  - input text color.
-  - if null, uses ChatWidgetEmbedConfig.style.fontColor.
-
-- ChatWidgetEmbedConfig.style.input.placeholderColor
-  - placeholder text color.
-  - if null, derived from ChatWidgetEmbedConfig.style.fontColor with opacity.
 
 Example:
 
@@ -314,17 +282,14 @@ style: {
 
 #### suggested questions (ChatWidgetEmbedConfig.style.suggestedQuestion.*)
 
-Put these inside:
-ChatWidgetEmbedConfig.style.suggestedQuestion = { ... }
+Put these inside: `ChatWidgetEmbedConfig.style.suggestedQuestion = { ... }`
 
-- ChatWidgetEmbedConfig.style.suggestedQuestion.bgColor
-  - background color of the suggested question bubbles.
+| Property | Description |
+|----------|-------------|
+| `bgColor` | Background color of the suggested question bubbles. |
+| `borderColor` | Border color of the suggested question bubbles. |
+| `textColor` | Text color of the suggested question bubbles. |
 
-- ChatWidgetEmbedConfig.style.suggestedQuestion.borderColor
-  - border color of the suggested question bubbles.
-
-- ChatWidgetEmbedConfig.style.suggestedQuestion.textColor
-  - text color of the suggested question bubbles.
 
 Example:
 
@@ -340,14 +305,13 @@ style: {
 
 ### markdown (ChatWidgetEmbedConfig.markdown.*)
 
-Put these inside:
-ChatWidgetEmbedConfig.markdown = { ... }
+Put these inside: `ChatWidgetEmbedConfig.markdown = { ... }`
 
-- ChatWidgetEmbedConfig.markdown.enabled
-  - enable/disable markdown rendering.
+| Property | Description |
+|----------|-------------|
+| `enabled` | Enable/disable markdown rendering. |
+| `sanitize` | Enable/disable HTML sanitization. |
 
-- ChatWidgetEmbedConfig.markdown.sanitize
-  - enable/disable HTML sanitization.
 
 Example:
 
