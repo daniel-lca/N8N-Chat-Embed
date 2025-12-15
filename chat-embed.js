@@ -481,7 +481,8 @@
                 poweredBy: {
                     text: 'Powered by LowCode',
                     link: 'https://www.lowcode.agency'
-                }
+                },
+                chatInputPlaceholder: 'Type your message here...',
             },
             style: {
                 primaryColor: '#854fff',
@@ -618,7 +619,7 @@
                 <div class="chat-messages"></div>
                 ${config.suggestedQuestions && config.suggestedQuestions.length > 0 ? `<div class="suggested-questions"></div>` : ''}
                 <div class="chat-input">
-                    <textarea placeholder="Type your message here..." rows="1"></textarea>
+                    <textarea placeholder="${config.branding.chatInputPlaceholder}" rows="1"></textarea>
                     <button type="submit">Send</button>
                 </div>
                 <div class="chat-footer">
@@ -768,7 +769,7 @@
                     botMessageDiv.textContent = processed.content;
                 }
                 messagesContainer.appendChild(botMessageDiv);
-                scrollToBottom();
+                botMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -778,7 +779,7 @@
                 errorDiv.className = 'chat-message bot';
                 errorDiv.textContent = 'Sorry, there was an error processing your message. Please try again.';
                 messagesContainer.appendChild(errorDiv);
-                scrollToBottom();
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } finally {
                 // Re-enable input elements and restore original send button content
                 sendButton.disabled = false;
