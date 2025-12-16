@@ -663,7 +663,7 @@
             }
 
             try {
-                let finalHtml = marked.parse(content);
+                let finalHtml = marked.parse(content, { breaks: true, gfm: true });
                 if (config.markdown.sanitize) {
                     finalHtml = DOMPurify.sanitize(finalHtml);
                 }
