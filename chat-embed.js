@@ -677,6 +677,14 @@
             }
         }
 
+        function makeLinksOpenInNewTab(container) {
+            const links = container.querySelectorAll('a');
+            links.forEach(link => {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            });
+        }
+
         function initializeChat() {
             currentSessionId = generateUUID();
 
@@ -693,6 +701,7 @@
             }
 
             messagesContainer.appendChild(botMessageDiv);
+            makeLinksOpenInNewTab(botMessageDiv);
             scrollToBottom();
 
             if (config.suggestedQuestions && config.suggestedQuestions.length > 0) {
@@ -769,6 +778,7 @@
                     botMessageDiv.textContent = processed.content;
                 }
                 messagesContainer.appendChild(botMessageDiv);
+                makeLinksOpenInNewTab(botMessageDiv);
                 // Scroll only the messages container to the top of the new message
                 messagesContainer.scrollTop = botMessageDiv.offsetTop - messagesContainer.offsetTop;
 
@@ -780,6 +790,7 @@
                 errorDiv.className = 'chat-message bot';
                 errorDiv.textContent = 'Sorry, there was an error processing your message. Please try again.';
                 messagesContainer.appendChild(errorDiv);
+                makeLinksOpenInNewTab(errorDiv);
                 // Scroll only the messages container to the top of the new message
                 messagesContainer.scrollTop = errorDiv.offsetTop - messagesContainer.offsetTop;
             } finally {
