@@ -153,12 +153,12 @@
 
         .n8n-chat-widget-embed-root .chat-message.bot ul,
         .n8n-chat-widget-embed-root .chat-message.bot ol {
-            margin: 0.3em 0;
+            margin: 0.8em 0;
             padding-left: 1.2em;
         }
 
         .n8n-chat-widget-embed-root .chat-message.bot p {
-            margin: 0.3em 0;
+            margin: 0.8em 0;
         }
 
         .n8n-chat-widget-embed-root .chat-message.bot > *:first-child {
