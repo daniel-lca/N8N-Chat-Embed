@@ -118,7 +118,7 @@
             word-wrap: break-word;
             font-size: var(--chat--font-size);
             line-height: 1.4;
-            white-space: pre-wrap; /* Preserves whitespace and line breaks */
+            /* white-space: pre-wrap;  Moved to specific message types */
             word-wrap: break-word;
         }
 
@@ -128,6 +128,7 @@
             align-self: flex-end; /* Aligns to the right */
             box-shadow: 0 4px 12px hsla(255, 100%, 75%, 0.2); /* Adjusted for general primary color */
             border: none;
+            white-space: pre-wrap; /* Preserves user's whitespace and line breaks */
         }
 
         .n8n-chat-widget-embed-root .chat-message.bot {
@@ -136,6 +137,7 @@
             color: var(--chat--bot-bubble-text-color);
             align-self: flex-start; /* Aligns to the left */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            white-space: normal; /* Use normal whitespace for parsed HTML to prevent gaps */
         }
 
         /* Markdown styling for bot messages (inherited from original) */
