@@ -42,8 +42,8 @@ Place this code anywhere inside the <body> of your page.
   };
 </script>
 
-<!-- IMPORTANT: replace @v1.0.0 with your desired release tag -->
-<script src="https://cdn.jsdelivr.net/gh/daniel-lca/N8N-Chat-Embed@v1.0.0/chat-embed.js"></script>
+<!-- IMPORTANT: replace @v1.0.1 with your desired release tag -->
+<script src="https://cdn.jsdelivr.net/gh/daniel-lca/N8N-Chat-Embed@v1.0.1/chat-embed.js"></script>
 ```
 
 
