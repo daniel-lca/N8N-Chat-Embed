@@ -147,7 +147,7 @@
         .n8n-chat-widget-embed-root .chat-message.bot h4,
         .n8n-chat-widget-embed-root .chat-message.bot h5,
         .n8n-chat-widget-embed-root .chat-message.bot h6 {
-            margin: 0.3em 0;
+            margin: 1em 0 0.5em 0;
             font-weight: 600;
         }
 
@@ -161,11 +161,11 @@
             margin: 0.3em 0;
         }
 
-        .n8n-chat-widget-embed-root .chat-message.bot p:first-child {
+        .n8n-chat-widget-embed-root .chat-message.bot > *:first-child {
             margin-top: 0 !important;
         }
 
-        .n8n-chat-widget-embed-root .chat-message.bot p:last-child {
+        .n8n-chat-widget-embed-root .chat-message.bot > *:last-child {
             margin-bottom: 0 !important;
         }
 
