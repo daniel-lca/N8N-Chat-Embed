@@ -769,7 +769,8 @@
                     botMessageDiv.textContent = processed.content;
                 }
                 messagesContainer.appendChild(botMessageDiv);
-                botMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Scroll only the messages container to the top of the new message
+                messagesContainer.scrollTop = botMessageDiv.offsetTop - messagesContainer.offsetTop;
 
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -779,7 +780,8 @@
                 errorDiv.className = 'chat-message bot';
                 errorDiv.textContent = 'Sorry, there was an error processing your message. Please try again.';
                 messagesContainer.appendChild(errorDiv);
-                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Scroll only the messages container to the top of the new message
+                messagesContainer.scrollTop = errorDiv.offsetTop - messagesContainer.offsetTop;
             } finally {
                 // Re-enable input elements and restore original send button content
                 sendButton.disabled = false;
