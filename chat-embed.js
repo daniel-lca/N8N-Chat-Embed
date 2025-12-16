@@ -118,7 +118,7 @@
             word-wrap: break-word;
             font-size: var(--chat--font-size);
             line-height: 1.4;
-            white-space: pre-wrap; /* Preserves whitespace and line breaks */
+            /* white-space: pre-wrap;  Moved to specific message types */
             word-wrap: break-word;
         }
 
@@ -128,6 +128,7 @@
             align-self: flex-end; /* Aligns to the right */
             box-shadow: 0 4px 12px hsla(255, 100%, 75%, 0.2); /* Adjusted for general primary color */
             border: none;
+            white-space: pre-wrap; /* Preserves user's whitespace and line breaks */
         }
 
         .n8n-chat-widget-embed-root .chat-message.bot {
@@ -136,6 +137,7 @@
             color: var(--chat--bot-bubble-text-color);
             align-self: flex-start; /* Aligns to the left */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            white-space: normal; /* Use normal whitespace for parsed HTML to prevent gaps */
         }
 
         /* Markdown styling for bot messages (inherited from original) */
@@ -145,25 +147,25 @@
         .n8n-chat-widget-embed-root .chat-message.bot h4,
         .n8n-chat-widget-embed-root .chat-message.bot h5,
         .n8n-chat-widget-embed-root .chat-message.bot h6 {
-            margin: 0.3em 0;
+            margin: 1em 0 0.5em 0;
             font-weight: 600;
         }
 
         .n8n-chat-widget-embed-root .chat-message.bot ul,
         .n8n-chat-widget-embed-root .chat-message.bot ol {
-            margin: 0.3em 0;
+            margin: 0.8em 0;
             padding-left: 1.2em;
         }
 
         .n8n-chat-widget-embed-root .chat-message.bot p {
-            margin: 0.3em 0;
+            margin: 0.8em 0;
         }
 
-        .n8n-chat-widget-embed-root .chat-message.bot p:first-child {
+        .n8n-chat-widget-embed-root .chat-message.bot > *:first-child {
             margin-top: 0 !important;
         }
 
-        .n8n-chat-widget-embed-root .chat-message.bot p:last-child {
+        .n8n-chat-widget-embed-root .chat-message.bot > *:last-child {
             margin-bottom: 0 !important;
         }
 
@@ -661,7 +663,7 @@
             }
 
             try {
-                let finalHtml = marked.parse(content);
+                let finalHtml = marked.parse(content, { breaks: true, gfm: true });
                 if (config.markdown.sanitize) {
                     finalHtml = DOMPurify.sanitize(finalHtml);
                 }
@@ -675,6 +677,14 @@
                 console.error('Error parsing markdown:', error);
                 return { type: 'text', content: content }; // Fallback to plain text on error
             }
+        }
+
+        function makeLinksOpenInNewTab(container) {
+            const links = container.querySelectorAll('a');
+            links.forEach(link => {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            });
         }
 
         function initializeChat() {
@@ -693,6 +703,7 @@
             }
 
             messagesContainer.appendChild(botMessageDiv);
+            makeLinksOpenInNewTab(botMessageDiv);
             scrollToBottom();
 
             if (config.suggestedQuestions && config.suggestedQuestions.length > 0) {
@@ -769,6 +780,7 @@
                     botMessageDiv.textContent = processed.content;
                 }
                 messagesContainer.appendChild(botMessageDiv);
+                makeLinksOpenInNewTab(botMessageDiv);
                 // Scroll only the messages container to the top of the new message
                 messagesContainer.scrollTop = botMessageDiv.offsetTop - messagesContainer.offsetTop;
 
@@ -780,6 +792,7 @@
                 errorDiv.className = 'chat-message bot';
                 errorDiv.textContent = 'Sorry, there was an error processing your message. Please try again.';
                 messagesContainer.appendChild(errorDiv);
+                makeLinksOpenInNewTab(errorDiv);
                 // Scroll only the messages container to the top of the new message
                 messagesContainer.scrollTop = errorDiv.offsetTop - messagesContainer.offsetTop;
             } finally {
