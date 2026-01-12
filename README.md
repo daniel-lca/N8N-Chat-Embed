@@ -130,7 +130,10 @@ Copy it, then remove anything you don’t need.
     suggestedQuestions: [
       'What can you help me with?',
       'How does this work?'
-    ]
+    ],
+
+    // optional: load user's country code using a free external service (api.country.is)
+    loadUserCountry: false // default is false
   };
 </script>
 ```
@@ -147,6 +150,7 @@ Everything lives under:
   - style
   - markdown
   - suggestedQuestions
+  - loadUserCountry
 
 Below you’ll see each property written as a full path so you know exactly where to place it.
 
@@ -158,6 +162,7 @@ Below you’ll see each property written as a full path so you know exactly wher
 | `targetElementId` | **Required**. The ID of the `div` where the widget will be rendered. |
 | `webhook.url` | **Required**. Your n8n production webhook URL. |
 | `webhook.route` | Optional. A route identifier to handle different flows in your n8n workflow. |
+| `loadUserCountry` | Optional. If `true`, fetches user's country code via `api.country.is` and sends it in metadata. Default `false`. |
 
 
 ### branding (ChatWidgetEmbedConfig.branding.*)
