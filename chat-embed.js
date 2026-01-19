@@ -170,14 +170,18 @@
         }
 
         .n8n-chat-widget-embed-root .chat-message.bot code {
-            background: var(--chat--suggested-question-bg);
+            background: #f1f5f9; /* Fixed light background for readability */
+            color: #0f172a;      /* Fixed dark text for readability */
+            border: 1px solid #e2e8f0;
             padding: 0.1em 0.3em;
             border-radius: 3px;
             font-size: 0.9em;
         }
 
         .n8n-chat-widget-embed-root .chat-message.bot pre {
-            background: var(--chat--suggested-question-bg);
+            background: #f1f5f9; /* Fixed light background for readability */
+            color: #0f172a;      /* Fixed dark text for readability */
+            border: 1px solid #e2e8f0;
             padding: 0.8em;
             border-radius: 6px;
             overflow-x: auto;
