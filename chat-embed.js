@@ -571,19 +571,31 @@
         config.style.suggestedQuestion.textColor = config.style.suggestedQuestion.textColor || config.style.fontColor;
 
         let currentSessionId = '';
-        let userCountryCode = null;
+        let userCountryPromise = null;
 
         // Fetch user country if enabled
         if (config.loadUserCountry) {
-            fetch('https://api.country.is')
-                .then(response => response.json())
+            userCountryPromise = fetch('https://api.country.is')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Country fetch failed: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    userCountryCode = data.country;
+                    console.log('N8N Chat Embed: Country loaded', data.country);
+                    return data.country;
                 })
                 .catch(error => {
-                    console.error('Failed to load user country:', error);
+                    console.error('N8N Chat Embed: Failed to load user country.', error);
+                    // Check for common blocking issues in iframes
+                    if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+                        console.warn('N8N Chat Embed: This might be due to a browser content blocker (like Safari ITP) or CSP restricting third-party requests in iframes.');
+                    }
+                    return null;
                 });
         }
+
 
         // Find the target element specified by configuration
         const targetElement = document.getElementById(config.targetElementId);
@@ -743,6 +755,15 @@
             sendButton.style.cursor = 'not-allowed';
             sendButton.textContent = 'Sending...'; // Temporary text while sending
 
+            let countryCode = null;
+            if (userCountryPromise) {
+                try {
+                    countryCode = await userCountryPromise;
+                } catch (e) {
+                    console.warn('N8N Chat Embed: Could not resolve country code before sending.', e);
+                }
+            }
+
             const messageData = {
                 action: "sendMessage",
                 sessionId: currentSessionId,
@@ -750,7 +771,7 @@
                 chatInput: message,
                 metadata: {
                     userId: "",
-                    userCountry: userCountryCode
+                    userCountry: countryCode
                 }
             };
 
