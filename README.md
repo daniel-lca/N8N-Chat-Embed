@@ -55,6 +55,7 @@ This example includes every supported configuration option.
 Copy it, then remove anything you don’t need.
 
 ```html
+```html
 <script>
   window.ChatWidgetEmbedConfig = {
     // required: must match the container div id
@@ -73,17 +74,17 @@ Copy it, then remove anything you don’t need.
     },
 
     style: {
-      primaryColor: '#4E76CC',
-      secondaryColor: '#1E50BD',
+      primaryColor: '#854fff',
+      secondaryColor: '#6b3fd4',
 
       // background of the root container div (#n8n-chat-embed)
       backgroundColor: 'transparent',
 
       // background of the internal chat UI (header, message area, input)
-      internalBackgroundColor: 'transparent',
+      internalBackgroundColor: '#ffffff',
 
       fontColor: '#333333',
-      fontSize: '16px',
+      fontSize: '14px',
 
       // style.userBubble.*
       userBubble: {
@@ -132,10 +133,47 @@ Copy it, then remove anything you don’t need.
       'How does this work?'
     ],
 
-    // optional: load user's country code using a free external service (api.country.is)
-    loadUserCountry: false // default is false
+    // Geolocation: Set to true to fetch user country before loading
+    loadGeolocation: false 
   };
 </script>
+
+<!-- 
+  Paste this script immediately after the configuration above.
+  It handles the geolocation (if enabled) and loads the chat widget.
+  IMPORTANT: If you use this script, DO NOT include the standard chat-embed.js script tag.
+-->
+<script>
+    (function() {
+        const config = window.ChatWidgetEmbedConfig;
+        
+        // You can change this to point to a specific version if needed
+        const embedScriptUrl = "https://cdn.jsdelivr.net/gh/daniel-lca/N8N-Chat-Embed@latest/chat-embed.js";
+
+        const loadWidget = () => {
+            const script = document.createElement('script');
+            script.src = embedScriptUrl;
+            document.body.appendChild(script);
+        };
+
+        if (config && config.loadGeolocation) {
+            fetch('https://api.country.is')
+                .then(response => response.json())
+                .then(data => {
+                    config.userCountry = data.country;
+                    console.log('User country loaded:', data.country);
+                    loadWidget();
+                })
+                .catch(error => {
+                    console.error('Failed to load user country:', error);
+                    loadWidget(); // Fallback to loading widget anyway
+                });
+        } else {
+            loadWidget();
+        }
+    })();
+</script>
+```
 ```
 
 ---
@@ -162,7 +200,7 @@ Below you’ll see each property written as a full path so you know exactly wher
 | `targetElementId` | **Required**. The ID of the `div` where the widget will be rendered. |
 | `webhook.url` | **Required**. Your n8n production webhook URL. |
 | `webhook.route` | Optional. A route identifier to handle different flows in your n8n workflow. |
-| `loadUserCountry` | Optional. If `true`, fetches user's country code via `api.country.is` and sends it in metadata. Default `false`. |
+| `userCountry` | Optional. Manually provide a user country code string (e.g. "US"). |
 
 
 ### branding (ChatWidgetEmbedConfig.branding.*)

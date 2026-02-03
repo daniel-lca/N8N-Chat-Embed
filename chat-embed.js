@@ -530,7 +530,7 @@
                 sanitize: true
             },
             suggestedQuestions: [],
-            loadUserCountry: false
+            userCountry: null
         };
 
         // Deep merge utility function for configurations
@@ -750,7 +750,7 @@
                 chatInput: message,
                 metadata: {
                     userId: "",
-                    userCountry: userCountryCode
+                    userCountry: config.userCountry || null
                 }
             };
 
