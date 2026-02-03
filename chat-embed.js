@@ -571,6 +571,19 @@
         config.style.suggestedQuestion.textColor = config.style.suggestedQuestion.textColor || config.style.fontColor;
 
         let currentSessionId = '';
+        let userCountryCode = null;
+
+        // Fetch user country if enabled
+        if (config.loadUserCountry) {
+            fetch('https://api.country.is')
+                .then(response => response.json())
+                .then(data => {
+                    userCountryCode = data.country;
+                })
+                .catch(error => {
+                    console.error('Failed to load user country:', error);
+                });
+        }
 
         // Find the target element specified by configuration
         const targetElement = document.getElementById(config.targetElementId);
