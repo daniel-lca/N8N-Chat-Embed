@@ -530,7 +530,7 @@
                 sanitize: true
             },
             suggestedQuestions: [],
-            loadUserCountry: false
+            userCountry: null
         };
 
         // Deep merge utility function for configurations
@@ -571,55 +571,6 @@
         config.style.suggestedQuestion.textColor = config.style.suggestedQuestion.textColor || config.style.fontColor;
 
         let currentSessionId = '';
-        let userCountryPromise = null;
-
-        // Fetch user country if enabled
-        if (config.loadUserCountry) {
-            const fetchCountry = async () => {
-                try {
-                    // Try to bypass storage/cookie checks by omitting credentials and caching
-                    const fetchOptions = {
-                        method: 'GET',
-                        credentials: 'omit',
-                        cache: 'no-store',
-                        mode: 'cors'
-                    };
-
-                    const response = await fetch('https://api.country.is', fetchOptions);
-                    if (!response.ok) throw new Error(`Primary API failed: ${response.status}`);
-                    const data = await response.json();
-                    console.log('N8N Chat Embed: Country loaded (Primary)', data.country);
-                    return data.country;
-                } catch (primaryError) {
-                    console.warn('N8N Chat Embed: Primary country fetch failed, trying fallback...', primaryError);
-                    try {
-                        const fetchOptions = {
-                            method: 'GET',
-                            credentials: 'omit',
-                            cache: 'no-store',
-                            mode: 'cors'
-                        };
-
-                        // Fallback to ipwho.is
-                        const response = await fetch('https://ipwho.is/', fetchOptions);
-                        if (!response.ok) throw new Error(`Fallback API failed: ${response.status}`);
-                        const data = await response.json();
-                        // ipwho.is returns { country_code: "US" }
-                        if (data.country_code) {
-                            console.log('N8N Chat Embed: Country loaded (Fallback)', data.country_code);
-                            return data.country_code;
-                        }
-                    } catch (fallbackError) {
-                        console.error('N8N Chat Embed: All country fetch attempts failed.', fallbackError);
-                        return null;
-                    }
-                }
-                return null;
-            };
-
-            userCountryPromise = fetchCountry();
-        }
-
 
         // Find the target element specified by configuration
         const targetElement = document.getElementById(config.targetElementId);
@@ -779,15 +730,6 @@
             sendButton.style.cursor = 'not-allowed';
             sendButton.textContent = 'Sending...'; // Temporary text while sending
 
-            let countryCode = null;
-            if (userCountryPromise) {
-                try {
-                    countryCode = await userCountryPromise;
-                } catch (e) {
-                    console.warn('N8N Chat Embed: Could not resolve country code before sending.', e);
-                }
-            }
-
             const messageData = {
                 action: "sendMessage",
                 sessionId: currentSessionId,
@@ -795,7 +737,7 @@
                 chatInput: message,
                 metadata: {
                     userId: "",
-                    userCountry: countryCode
+                    userCountry: config.userCountry || null
                 }
             };
 
