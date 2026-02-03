@@ -575,25 +575,34 @@
 
         // Fetch user country if enabled
         if (config.loadUserCountry) {
-            userCountryPromise = fetch('https://api.country.is')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Country fetch failed: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('N8N Chat Embed: Country loaded', data.country);
+            const fetchCountry = async () => {
+                try {
+                    const response = await fetch('https://api.country.is');
+                    if (!response.ok) throw new Error(`Primary API failed: ${response.status}`);
+                    const data = await response.json();
+                    console.log('N8N Chat Embed: Country loaded (Primary)', data.country);
                     return data.country;
-                })
-                .catch(error => {
-                    console.error('N8N Chat Embed: Failed to load user country.', error);
-                    // Check for common blocking issues in iframes
-                    if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-                        console.warn('N8N Chat Embed: This might be due to a browser content blocker (like Safari ITP) or CSP restricting third-party requests in iframes.');
+                } catch (primaryError) {
+                    console.warn('N8N Chat Embed: Primary country fetch failed, trying fallback...', primaryError);
+                    try {
+                        // Fallback to ipwho.is
+                        const response = await fetch('https://ipwho.is/');
+                        if (!response.ok) throw new Error(`Fallback API failed: ${response.status}`);
+                        const data = await response.json();
+                        // ipwho.is returns { country_code: "US" }
+                        if (data.country_code) {
+                            console.log('N8N Chat Embed: Country loaded (Fallback)', data.country_code);
+                            return data.country_code;
+                        }
+                    } catch (fallbackError) {
+                        console.error('N8N Chat Embed: All country fetch attempts failed.', fallbackError);
+                        return null;
                     }
-                    return null;
-                });
+                }
+                return null;
+            };
+
+            userCountryPromise = fetchCountry();
         }
 
 
