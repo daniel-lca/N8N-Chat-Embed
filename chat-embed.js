@@ -577,7 +577,15 @@
         if (config.loadUserCountry) {
             const fetchCountry = async () => {
                 try {
-                    const response = await fetch('https://api.country.is');
+                    // Try to bypass storage/cookie checks by omitting credentials and caching
+                    const fetchOptions = {
+                        method: 'GET',
+                        credentials: 'omit',
+                        cache: 'no-store',
+                        mode: 'cors'
+                    };
+
+                    const response = await fetch('https://api.country.is', fetchOptions);
                     if (!response.ok) throw new Error(`Primary API failed: ${response.status}`);
                     const data = await response.json();
                     console.log('N8N Chat Embed: Country loaded (Primary)', data.country);
@@ -585,8 +593,15 @@
                 } catch (primaryError) {
                     console.warn('N8N Chat Embed: Primary country fetch failed, trying fallback...', primaryError);
                     try {
+                        const fetchOptions = {
+                            method: 'GET',
+                            credentials: 'omit',
+                            cache: 'no-store',
+                            mode: 'cors'
+                        };
+
                         // Fallback to ipwho.is
-                        const response = await fetch('https://ipwho.is/');
+                        const response = await fetch('https://ipwho.is/', fetchOptions);
                         if (!response.ok) throw new Error(`Fallback API failed: ${response.status}`);
                         const data = await response.json();
                         // ipwho.is returns { country_code: "US" }
