@@ -455,13 +455,13 @@
         /* Mobile Breakpoint: Stack inputs */
         @media (max-width: 600px) {
             .n8n-chat-widget-embed-root .prechat-form {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
             }
             .n8n-chat-widget-embed-root .prechat-field:nth-of-type(odd):last-of-type {
-                grid-column: auto;
+                grid-column: auto !important;
             }
             .n8n-chat-widget-embed-root .prechat-submit-btn {
-                grid-column: auto;
+                grid-column: auto !important;
             }
         }
 
