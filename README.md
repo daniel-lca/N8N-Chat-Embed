@@ -134,7 +134,21 @@ Copy it, then remove anything you don’t need.
     ],
 
     // Geolocation: Set to true to fetch user country before loading
-    loadGeolocation: false 
+    loadGeolocation: false,
+
+    // Pre-chat form configuration
+    prechat: {
+      enabled: false,
+      title: "Let's start",
+      description: "Please fill out the form below to start chatting.",
+      titleFontSize: "24px",
+      submitLabel: "Start Chat",
+      requiredFieldMarking: "*",
+      inputs: [
+        { id: 'name', label: 'Name', type: 'text', placeholder: 'Your name', required: true },
+        { id: 'email', label: 'Email', type: 'email', placeholder: 'Your email', required: true }
+      ]
+    } 
   };
 </script>
 
@@ -189,6 +203,7 @@ Everything lives under:
   - markdown
   - suggestedQuestions
   - loadUserCountry
+  - prechat
 
 Below you’ll see each property written as a full path so you know exactly where to place it.
 
@@ -377,4 +392,41 @@ suggestedQuestions: [
   "What is your pricing?",
   "How do I duplicate a template?"
 ]
+```
+
+### pre-chat form (ChatWidgetEmbedConfig.prechat.*)
+
+Put these inside: `ChatWidgetEmbedConfig.prechat = { ... }`
+
+| Property | Description |
+|----------|-------------|
+| `enabled` | Enable/disable the pre-chat form. Default `false`. |
+| `title` | Title displayed above the form. |
+| `description` | Subheading text displayed below the title. Default empty. |
+| `titleFontSize` | Font size of the title. Default `24px`. |
+| `submitLabel` | Text on the submit button. |
+| `requiredFieldMarking` | string to append to label of required fields. Default `*`. |
+| `inputs` | Array of input field objects. |
+
+#### input object structure
+
+| Property | Description |
+|----------|-------------|
+| `id` | Unique identifier for the field (used in form data). |
+| `label` | Label text displayed above the input. |
+| `type` | HTML input type (e.g., `text`, `email`). |
+| `placeholder` | Placeholder text for the input. |
+| `required` | Boolean, whether the field is required. |
+
+Example:
+
+```js
+prechat: {
+  enabled: true,
+  title: "Contact Us",
+  inputs: [
+    { id: 'name', label: 'Name', type: 'text', required: true },
+    { id: 'query', label: 'Topic', type: 'text', placeholder: 'Billing' }
+  ]
+}
 ```
