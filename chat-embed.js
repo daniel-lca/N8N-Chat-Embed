@@ -399,6 +399,7 @@
 
             .n8n-chat-widget-embed-root .brand-header {
                 padding: 12px;
+                box-sizing: border-box; /* Fix horizontal scrollbar */
             }
             .n8n-chat-widget-embed-root .brand-header img {
                 width: 28px;
@@ -426,6 +427,110 @@
                 font-size: 13px;
                 padding: 6px 10px;
             }
+        }
+        /* Pre-chat form styles */
+        /* Ensure border-box for all pre-chat elements to prevent overflow */
+        .n8n-chat-widget-embed-root .prechat-form,
+        .n8n-chat-widget-embed-root .prechat-form * {
+             box-sizing: border-box;
+        }
+
+        /* Pre-chat form (responsive & centered) */
+        .n8n-chat-widget-embed-root .prechat-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 16px; /* Horizontal padding as requested */
+            width: 100%;
+            max-width: 600px; /* Limit width on wide screens */
+            margin: 0 auto;
+        }
+
+        /* Grid Logic: Last odd item spans full width */
+        /* We target the wrapper div .prechat-field */
+        .n8n-chat-widget-embed-root .prechat-field:nth-of-type(odd):last-of-type {
+            grid-column: span 2;
+        }
+        
+        /* Mobile Breakpoint: Stack inputs */
+        @media (max-width: 480px) {
+            .n8n-chat-widget-embed-root .prechat-form {
+                grid-template-columns: 1fr;
+            }
+            .n8n-chat-widget-embed-root .prechat-field:nth-of-type(odd):last-of-type {
+                grid-column: auto;
+            }
+            .n8n-chat-widget-embed-root .prechat-submit-btn {
+                grid-column: auto;
+            }
+        }
+
+        .n8n-chat-widget-embed-root .prechat-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--chat--color-font);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 6px; /* Added spacing between label and input */
+        }
+
+        .n8n-chat-widget-embed-root .prechat-label.spread {
+            justify-content: space-between;
+            gap: 0;
+        }
+
+        .n8n-chat-widget-embed-root .prechat-required-marker {
+            font-size: 12px;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+        .n8n-chat-widget-embed-root .prechat-input {
+            padding: 12px;
+            border: 1px solid var(--chat--input-border);
+            border-radius: 8px;
+            background: var(--chat--input-bg);
+            color: var(--chat--input-text-color);
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .n8n-chat-widget-embed-root .prechat-input:focus {
+            border-color: var(--chat--color-primary);
+            outline: none;
+        }
+
+        .n8n-chat-widget-embed-root .prechat-submit-btn {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--chat--send-button-bg-start) 0%, var(--chat--send-button-bg-end) 100%);
+            color: var(--chat--send-button-text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        .n8n-chat-widget-embed-root .prechat-submit-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .n8n-chat-widget-embed-root .new-conversation-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            overflow-y: auto;
         }
     `;
 
@@ -530,7 +635,17 @@
                 sanitize: true
             },
             suggestedQuestions: [],
-            userCountry: null
+            userCountry: null,
+            prechat: {
+                enabled: false,
+                title: "Let's start",
+                titleFontSize: "24px",
+                submitLabel: "Start Chat",
+                requiredFieldMarking: "*",
+                inputs: [
+                    { id: 'name', label: 'Name', type: 'text', placeholder: 'Your name', required: true }
+                ]
+            }
         };
 
         // Deep merge utility function for configurations
@@ -549,6 +664,11 @@
         };
 
         const config = mergeDeep(defaultConfig, window.ChatWidgetEmbedConfig || {});
+
+        // Ensure inputs is an array and limit to 6 (user requested increase from 5 to 6)
+        if (config.prechat.inputs) {
+            config.prechat.inputs = Array.isArray(config.prechat.inputs) ? config.prechat.inputs.slice(0, 6) : defaultConfig.prechat.inputs;
+        }
 
         // Apply derived defaults for style properties if not explicitly set
         config.style.userBubble.bgColorStart = config.style.userBubble.bgColorStart || config.style.primaryColor;
@@ -648,16 +768,61 @@
             </div>
         `;
 
-        embedContainer.innerHTML = chatInterfaceHTML;
+        const preChatHTML = `
+             <div class="new-conversation-content" style="display: ${config.prechat.enabled ? 'flex' : 'none'}">
+                <div class="brand-header" style="width: 100%; border-bottom: none; background: transparent; justify-content: center; margin-bottom: 20px; box-sizing: border-box;">
+                    <img src="${config.branding.logo}" alt="${config.branding.name}" style="width: 48px; height: 48px;">
+                    <span style="font-size: 20px;">${config.branding.name}</span>
+                </div>
+                ${config.prechat.title ? `<h2 style="font-size: ${config.prechat.titleFontSize}; margin-bottom: 24px; text-align: center; color: var(--chat--color-font);">${config.prechat.title}</h2>` : ''}
+                <form class="prechat-form">
+                    ${config.prechat.inputs.map(input => `
+                        <div class="prechat-field">
+                            <label for="prechat-${input.id}" class="prechat-label${config.prechat.requiredFieldMarking !== '*' ? ' spread' : ''}">
+                                ${input.label}
+                                ${input.required ? `<span class="prechat-required-marker">${config.prechat.requiredFieldMarking}</span>` : ''}
+                            </label>
+                            <input 
+                                type="${input.type}" 
+                                id="prechat-${input.id}" 
+                                name="${input.id}" 
+                                class="prechat-input" 
+                                ${input.required ? 'required' : ''}
+                                placeholder="${input.placeholder || ''}"
+                            >
+                        </div>
+                    `).join('')}
+                    <button type="submit" class="prechat-submit-btn">
+                        ${config.prechat.submitLabel || 'Start Chat'}
+                    </button>
+                </form>
+            </div>
+        `;
+
+        embedContainer.innerHTML = preChatHTML + chatInterfaceHTML;
+
+        // Initially hide chat interface if prechat is enabled
+
         widgetContainer.appendChild(embedContainer);
         targetElement.appendChild(widgetContainer); // Append to the designated target element
 
         // Cache DOM elements
+        const widgetContainerDom = embedContainer; // Alias for clarity
         const chatInterface = embedContainer.querySelector('.chat-interface');
+        const prechatContainer = embedContainer.querySelector('.new-conversation-content');
         const messagesContainer = embedContainer.querySelector('.chat-messages');
         const textarea = embedContainer.querySelector('textarea');
-        const sendButton = embedContainer.querySelector('button[type="submit"]');
+        // Specific selector for the chat interface send button to avoid grabbing the pre-chat submit button
+        const sendButton = embedContainer.querySelector('.chat-interface button[type="submit"]');
         const suggestedQuestionsContainer = embedContainer.querySelector('.suggested-questions');
+
+        // Initial Visibility Logic
+        if (config.prechat.enabled) {
+            chatInterface.style.display = 'none';
+        } else {
+            if (prechatContainer) prechatContainer.style.display = 'none';
+            chatInterface.style.display = 'flex';
+        }
 
         // Define send button default text
         const sendButtonDefaultText = 'Send';
@@ -708,31 +873,67 @@
         function initializeChat() {
             currentSessionId = generateUUID();
 
-            // Add welcome message
-            const botMessageDiv = document.createElement('div');
-            botMessageDiv.className = 'chat-message bot';
+            // Add welcome message ONLY if prechat is NOT enabled
+            if (!config.prechat.enabled) {
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'chat-message bot';
 
-            const processed = processMessageContent(config.branding.welcomeMessage, true);
+                const processed = processMessageContent(config.branding.welcomeMessage, true);
 
-            if (processed.type === 'html') {
-                botMessageDiv.innerHTML = processed.content;
-            } else {
-                botMessageDiv.textContent = processed.content;
+                if (processed.type === 'html') {
+                    botMessageDiv.innerHTML = processed.content;
+                } else {
+                    botMessageDiv.textContent = processed.content;
+                }
+
+                messagesContainer.appendChild(botMessageDiv);
+                makeLinksOpenInNewTab(botMessageDiv);
+                scrollToBottom();
             }
-
-            messagesContainer.appendChild(botMessageDiv);
-            makeLinksOpenInNewTab(botMessageDiv);
-            scrollToBottom();
 
             if (config.suggestedQuestions && config.suggestedQuestions.length > 0) {
                 renderSuggestedQuestions(config.suggestedQuestions);
             }
         }
 
-        // Initialize chat immediately
-        initializeChat();
+        // Initialize chat immediately only if prechat is NOT enabled
+        if (!config.prechat.enabled) {
+            initializeChat();
+        }
 
-        async function sendMessage(message, isSuggested = false) {
+        // Handle Pre-chat Form Submission
+        if (config.prechat.enabled) {
+            const prechatForm = embedContainer.querySelector('.prechat-form');
+            if (prechatForm) {
+                prechatForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    const formData = new FormData(prechatForm);
+                    let messageText = '**Form Submission**\n\n';
+
+                    console.log('Form submitted');
+
+                    for (const [key, value] of formData.entries()) {
+                        const inputConfig = config.prechat.inputs.find(i => i.id === key);
+                        const label = inputConfig ? inputConfig.label : key;
+                        messageText += `**${label}:** ${value}\n`;
+                    }
+
+                    // Switch views
+                    prechatContainer.style.display = 'none';
+                    chatInterface.style.display = 'flex';
+
+                    // Initialize chat (which will now skip the welcome message)
+                    initializeChat();
+
+                    // Send hidden message: message, isSuggested, hidden
+                    sendMessage(messageText, false, true);
+                });
+            }
+        }
+
+
+        async function sendMessage(message, isSuggested = false, hidden = false) {
             // Disable input elements and indicate loading state
             sendButton.disabled = true;
             textarea.disabled = true;
@@ -754,11 +955,13 @@
                 }
             };
 
-            const userMessageDiv = document.createElement('div');
-            userMessageDiv.className = 'chat-message user';
-            userMessageDiv.textContent = message;
-            messagesContainer.appendChild(userMessageDiv);
-            scrollToBottom();
+            if (!hidden) {
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'chat-message user';
+                userMessageDiv.textContent = message;
+                messagesContainer.appendChild(userMessageDiv);
+                scrollToBottom();
+            }
 
             // Add typing indicator
             const typingIndicator = document.createElement('div');
