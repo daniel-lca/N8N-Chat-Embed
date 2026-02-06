@@ -463,6 +463,14 @@
             .n8n-chat-widget-embed-root .prechat-submit-btn {
                 grid-column: auto !important;
             }
+            /* Smaller logo and brand on mobile */
+            .n8n-chat-widget-embed-root .new-conversation-content .brand-header img {
+                width: 28px !important;
+                height: 28px !important;
+            }
+            .n8n-chat-widget-embed-root .new-conversation-content .brand-header span {
+                font-size: 16px !important;
+            }
         }
 
         .n8n-chat-widget-embed-root .prechat-label {
