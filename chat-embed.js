@@ -944,7 +944,6 @@
             }
             sendButton.style.opacity = '0.6';
             sendButton.style.cursor = 'not-allowed';
-            sendButton.textContent = 'Sending...'; // Temporary text while sending
 
             const messageData = {
                 action: "sendMessage",
@@ -1028,7 +1027,6 @@
                 }
                 sendButton.style.opacity = '1';
                 sendButton.style.cursor = 'pointer';
-                sendButton.textContent = sendButtonDefaultText; // Restore "Send" text
                 textarea.focus();
 
                 if (!isSuggested) {
