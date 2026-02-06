@@ -453,7 +453,7 @@
         }
         
         /* Mobile Breakpoint: Stack inputs */
-        @media (max-width: 480px) {
+        @media (max-width: 600px) {
             .n8n-chat-widget-embed-root .prechat-form {
                 grid-template-columns: 1fr;
             }
