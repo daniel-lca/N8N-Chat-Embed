@@ -639,6 +639,7 @@
             prechat: {
                 enabled: false,
                 title: "Let's start",
+                description: "",
                 titleFontSize: "24px",
                 submitLabel: "Start Chat",
                 requiredFieldMarking: "*",
@@ -774,7 +775,8 @@
                     <img src="${config.branding.logo}" alt="${config.branding.name}" style="width: 48px; height: 48px;">
                     <span style="font-size: 20px;">${config.branding.name}</span>
                 </div>
-                ${config.prechat.title ? `<h2 style="font-size: ${config.prechat.titleFontSize}; margin-bottom: 24px; text-align: center; color: var(--chat--color-font);">${config.prechat.title}</h2>` : ''}
+                ${config.prechat.title ? `<h2 style="font-size: ${config.prechat.titleFontSize}; margin-bottom: 8px; text-align: center; color: var(--chat--color-font);">${config.prechat.title}</h2>` : ''}
+                ${config.prechat.description ? `<p style="font-size: 14px; margin-bottom: 24px; text-align: center; color: var(--chat--color-font); opacity: 0.8; max-width: 90%; margin-left: auto; margin-right: auto;">${config.prechat.description}</p>` : ''}
                 <form class="prechat-form">
                     ${config.prechat.inputs.map(input => `
                         <div class="prechat-field">

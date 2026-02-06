@@ -140,6 +140,7 @@ Copy it, then remove anything you don’t need.
     prechat: {
       enabled: false,
       title: "Let's start",
+      description: "Please fill out the form below to start chatting.",
       titleFontSize: "24px",
       submitLabel: "Start Chat",
       requiredFieldMarking: "*",
@@ -401,6 +402,7 @@ Put these inside: `ChatWidgetEmbedConfig.prechat = { ... }`
 |----------|-------------|
 | `enabled` | Enable/disable the pre-chat form. Default `false`. |
 | `title` | Title displayed above the form. |
+| `description` | Subheading text displayed below the title. Default empty. |
 | `titleFontSize` | Font size of the title. Default `24px`. |
 | `submitLabel` | Text on the submit button. |
 | `requiredFieldMarking` | string to append to label of required fields. Default `*`. |
