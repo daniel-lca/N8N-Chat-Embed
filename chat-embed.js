@@ -535,10 +535,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             height: 100%;
             width: 100%;
             overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        /* Push content toward center when there's extra vertical space,
+           but collapse gracefully when the form overflows so scroll works fully */
+        .n8n-chat-widget-embed-root .new-conversation-content::before,
+        .n8n-chat-widget-embed-root .new-conversation-content::after {
+            content: '';
+            flex: 1 0 0px;
         }
     `;
 
