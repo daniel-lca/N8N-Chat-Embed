@@ -606,6 +606,12 @@
             box-sizing: border-box;
             position: relative;
         }
+        .n8n-chat-widget-embed-root .cta-popup.cta-popup--glass {
+            background: rgba(30, 30, 30, 0.75);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
         .n8n-chat-widget-embed-root .cta-popup-title {
             font-size: 18px;
@@ -1074,9 +1080,35 @@
             });
         }
 
+        // Cache for CTA form values per preset name
+        const ctaFormCache = {};
+
+        /**
+         * Checks if the internal background color is transparent or near-transparent.
+         */
+        function isTransparentBg() {
+            const bg = (config.style.internalBackgroundColor || '').trim().toLowerCase();
+            if (!bg || bg === 'transparent') return true;
+            // Check rgba with 0 alpha
+            const rgbaMatch = bg.match(/rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/);
+            if (rgbaMatch && parseFloat(rgbaMatch[1]) < 0.1) return true;
+            return false;
+        }
+
+        /**
+         * Builds the hidden message from a preset and field values.
+         */
+        function buildCtaMessage(preset, fieldValues) {
+            const lines = [preset.messagePrefix];
+            fieldValues.forEach(fv => {
+                lines.push(`${fv.label}: ${fv.value}`);
+            });
+            return lines.join('\n');
+        }
+
         /**
          * Opens a CTA popup overlay inside the embed container.
-         * Dynamically builds the form fields from the preset configuration.
+         * If the user already submitted this preset before, re-sends the cached data immediately.
          */
         function openCtaPopup(triggerButton) {
             if (triggerButton.disabled) return;
@@ -1086,7 +1118,17 @@
             if (!preset) return;
 
             const ctaId = triggerButton.dataset.ctaId;
+
+            // If we already have cached values for this preset, skip the form
+            if (ctaFormCache[presetName]) {
+                const hiddenMessage = buildCtaMessage(preset, ctaFormCache[presetName]);
+                triggerButton.disabled = true;
+                sendMessage(hiddenMessage, false, true);
+                return;
+            }
+
             const submitLabel = preset.submitLabel || 'Submit';
+            const useGlass = isTransparentBg();
 
             // Build fields HTML dynamically from preset config
             const fieldsHtml = (preset.fields || []).map(field => {
@@ -1105,7 +1147,7 @@
             overlay.className = 'cta-overlay';
 
             overlay.innerHTML = `
-                <div class="cta-popup">
+                <div class="cta-popup${useGlass ? ' cta-popup--glass' : ''}">
                     <button class="cta-popup-close" aria-label="Close">&times;</button>
                     <p class="cta-popup-title">${preset.popupTitle}</p>
                     <p class="cta-popup-subtitle">${preset.popupSubtitle}</p>
@@ -1141,12 +1183,10 @@
 
                 if (!allValid) return;
 
-                // Build hidden message: messagePrefix + each field on its own line
-                const lines = [preset.messagePrefix];
-                fieldValues.forEach(fv => {
-                    lines.push(`${fv.label}: ${fv.value}`);
-                });
-                const hiddenMessage = lines.join('\n');
+                // Cache the values for this preset so future buttons skip the form
+                ctaFormCache[presetName] = fieldValues;
+
+                const hiddenMessage = buildCtaMessage(preset, fieldValues);
 
                 // Disable this specific button permanently
                 triggerButton.disabled = true;
