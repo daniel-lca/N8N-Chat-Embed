@@ -549,6 +549,156 @@
             content: '';
             flex: 1 0 0px;
         }
+
+        /* CTA Button */
+        .n8n-chat-widget-embed-root .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--chat--send-button-bg-start) 0%, var(--chat--send-button-bg-end) 100%);
+            color: var(--chat--send-button-text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        .n8n-chat-widget-embed-root .cta-btn:hover:not(:disabled) {
+            transform: scale(1.03);
+        }
+        .n8n-chat-widget-embed-root .cta-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .n8n-chat-widget-embed-root .cta-btn svg {
+            flex-shrink: 0;
+        }
+
+        /* CTA Popup Overlay */
+        .n8n-chat-widget-embed-root .cta-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        /* CTA Popup */
+        .n8n-chat-widget-embed-root .cta-popup {
+            background: var(--chat--color-internal-background);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 360px;
+            max-height: calc(100% - 32px);
+            overflow-y: auto;
+            padding: 24px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .n8n-chat-widget-embed-root .cta-popup-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--chat--color-font);
+            margin: 0 0 4px 0;
+        }
+
+        .n8n-chat-widget-embed-root .cta-popup-subtitle {
+            font-size: 13px;
+            color: var(--chat--color-font);
+            opacity: 0.6;
+            margin: 0 0 20px 0;
+        }
+
+        .n8n-chat-widget-embed-root .cta-popup-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--chat--color-font);
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            padding: 4px 8px;
+            line-height: 1;
+        }
+        .n8n-chat-widget-embed-root .cta-popup-close:hover {
+            opacity: 1;
+        }
+
+        .n8n-chat-widget-embed-root .cta-popup label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--chat--color-font);
+            margin-bottom: 6px;
+        }
+
+        .n8n-chat-widget-embed-root .cta-popup input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--chat--input-border);
+            border-radius: 8px;
+            background: var(--chat--input-bg);
+            color: var(--chat--input-text-color);
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .n8n-chat-widget-embed-root .cta-popup input:focus {
+            border-color: var(--chat--color-primary);
+            outline: none;
+        }
+
+        .n8n-chat-widget-embed-root .cta-popup-field {
+            margin-bottom: 14px;
+        }
+
+        .n8n-chat-widget-embed-root .cta-popup-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--chat--send-button-bg-start) 0%, var(--chat--send-button-bg-end) 100%);
+            color: var(--chat--send-button-text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 15px;
+            margin-top: 6px;
+        }
+        .n8n-chat-widget-embed-root .cta-popup-submit:hover {
+            transform: scale(1.02);
+        }
+
+        /* Responsive: smaller popup on very small containers */
+        @container (max-width: 380px) {
+            .n8n-chat-widget-embed-root .cta-popup {
+                padding: 18px;
+            }
+            .n8n-chat-widget-embed-root .cta-popup-title {
+                font-size: 16px;
+            }
+            .n8n-chat-widget-embed-root .cta-btn {
+                font-size: 13px;
+                padding: 8px 14px;
+            }
+        }
     `;
 
     // Load dependencies (Geist Sans, Marked.js, DOMPurify)
@@ -663,7 +813,8 @@
                 inputs: [
                     { id: 'name', label: 'Name', type: 'text', placeholder: 'Your name', required: true }
                 ]
-            }
+            },
+            ctaButtons: {}
         };
 
         // Deep merge utility function for configurations
@@ -889,6 +1040,132 @@
             });
         }
 
+        // CTA: unique counter for independent button IDs
+        let ctaCounter = 0;
+
+        /**
+         * Scans a bot message element for [#cta:preset-name] or [#cta:preset-name:Custom Label] tags
+         * and replaces them with styled CTA buttons. Each button gets a unique ID.
+         * If the referenced preset doesn't exist in config.ctaButtons, the tag is removed.
+         */
+        function processCtaTags(messageElement) {
+            const html = messageElement.innerHTML;
+            const ctaRegex = /(?:<p>)?\s*\[#cta:([a-zA-Z0-9_-]+)(?::([^\]]*))?\]\s*(?:<\/p>)?/gi;
+
+            if (!ctaRegex.test(html)) return;
+            ctaRegex.lastIndex = 0;
+
+            const newHtml = html.replace(ctaRegex, (match, presetName, customText) => {
+                const preset = config.ctaButtons[presetName];
+                if (!preset) {
+                    console.warn(`[ChatWidget] CTA preset "${presetName}" not found in config.ctaButtons. Tag removed.`);
+                    return '';
+                }
+                const btnId = 'cta-' + (++ctaCounter);
+                const btnText = (customText && customText.trim()) || preset.label || presetName;
+                return `<button class="cta-btn" id="${btnId}" data-cta-id="${btnId}" data-cta-preset="${presetName}">${btnText}</button>`;
+            });
+
+            messageElement.innerHTML = newHtml;
+
+            const ctaButtons = messageElement.querySelectorAll('.cta-btn');
+            ctaButtons.forEach(btn => {
+                btn.addEventListener('click', () => openCtaPopup(btn));
+            });
+        }
+
+        /**
+         * Opens a CTA popup overlay inside the embed container.
+         * Dynamically builds the form fields from the preset configuration.
+         */
+        function openCtaPopup(triggerButton) {
+            if (triggerButton.disabled) return;
+
+            const presetName = triggerButton.dataset.ctaPreset;
+            const preset = config.ctaButtons[presetName];
+            if (!preset) return;
+
+            const ctaId = triggerButton.dataset.ctaId;
+            const submitLabel = preset.submitLabel || 'Submit';
+
+            // Build fields HTML dynamically from preset config
+            const fieldsHtml = (preset.fields || []).map(field => {
+                const fieldId = `cta-${field.id}-${ctaId}`;
+                const requiredAttr = field.required ? 'required' : '';
+                const placeholderAttr = field.placeholder ? `placeholder="${field.placeholder}"` : '';
+                return `
+                    <div class="cta-popup-field">
+                        <label for="${fieldId}">${field.label}</label>
+                        <input type="${field.type || 'text'}" id="${fieldId}" data-field-id="${field.id}" ${placeholderAttr} ${requiredAttr} />
+                    </div>
+                `;
+            }).join('');
+
+            const overlay = document.createElement('div');
+            overlay.className = 'cta-overlay';
+
+            overlay.innerHTML = `
+                <div class="cta-popup">
+                    <button class="cta-popup-close" aria-label="Close">&times;</button>
+                    <p class="cta-popup-title">${preset.popupTitle}</p>
+                    <p class="cta-popup-subtitle">${preset.popupSubtitle}</p>
+                    <form class="cta-popup-form">
+                        ${fieldsHtml}
+                        <button type="submit" class="cta-popup-submit">${submitLabel}</button>
+                    </form>
+                </div>
+            `;
+
+            // Close on overlay background click
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.remove();
+            });
+
+            // Close button
+            overlay.querySelector('.cta-popup-close').addEventListener('click', () => {
+                overlay.remove();
+            });
+
+            // Form submission
+            overlay.querySelector('.cta-popup-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const fieldValues = [];
+                let allValid = true;
+                (preset.fields || []).forEach(field => {
+                    const input = overlay.querySelector(`#cta-${field.id}-${ctaId}`);
+                    const val = input ? input.value.trim() : '';
+                    if (field.required && !val) allValid = false;
+                    fieldValues.push({ label: field.label, value: val });
+                });
+
+                if (!allValid) return;
+
+                // Build hidden message: messagePrefix + each field on its own line
+                const lines = [preset.messagePrefix];
+                fieldValues.forEach(fv => {
+                    lines.push(`${fv.label}: ${fv.value}`);
+                });
+                const hiddenMessage = lines.join('\n');
+
+                // Disable this specific button permanently
+                triggerButton.disabled = true;
+
+                // Remove popup
+                overlay.remove();
+
+                // Send as hidden message
+                sendMessage(hiddenMessage, false, true);
+            });
+
+            // Append overlay to the embed container
+            embedContainer.appendChild(overlay);
+
+            // Focus the first input
+            const firstInput = overlay.querySelector('.cta-popup-form input');
+            if (firstInput) firstInput.focus();
+        }
+
         function initializeChat() {
             currentSessionId = generateUUID();
 
@@ -907,6 +1184,7 @@
 
                 messagesContainer.appendChild(botMessageDiv);
                 makeLinksOpenInNewTab(botMessageDiv);
+                processCtaTags(botMessageDiv);
                 scrollToBottom();
             }
 
@@ -961,6 +1239,10 @@
             }
             sendButton.style.opacity = '0.6';
             sendButton.style.cursor = 'not-allowed';
+
+            // Disable all active (not already used) email CTA buttons during send
+            const activeCtaBtns = embedContainer.querySelectorAll('.cta-btn:not(:disabled)');
+            activeCtaBtns.forEach(btn => { btn.disabled = true; btn.dataset.tempDisabled = 'true'; });
 
             const messageData = {
                 action: "sendMessage",
@@ -1021,6 +1303,7 @@
                 }
                 messagesContainer.appendChild(botMessageDiv);
                 makeLinksOpenInNewTab(botMessageDiv);
+                processCtaTags(botMessageDiv);
                 // Scroll only the messages container to the top of the new message
                 messagesContainer.scrollTop = botMessageDiv.offsetTop - messagesContainer.offsetTop;
 
@@ -1045,6 +1328,10 @@
                 sendButton.style.opacity = '1';
                 sendButton.style.cursor = 'pointer';
                 textarea.focus();
+
+                // Re-enable only temporarily disabled CTA buttons (not ones already submitted)
+                const tempDisabledCtaBtns = embedContainer.querySelectorAll('.cta-btn[data-temp-disabled="true"]');
+                tempDisabledCtaBtns.forEach(btn => { btn.disabled = false; delete btn.dataset.tempDisabled; });
 
                 if (!isSuggested) {
                     textarea.value = '';

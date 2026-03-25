@@ -55,7 +55,6 @@ This example includes every supported configuration option.
 Copy it, then remove anything you don’t need.
 
 ```html
-```html
 <script>
   window.ChatWidgetEmbedConfig = {
     // required: must match the container div id
@@ -148,7 +147,22 @@ Copy it, then remove anything you don’t need.
         { id: 'name', label: 'Name', type: 'text', placeholder: 'Your name', required: true },
         { id: 'email', label: 'Email', type: 'email', placeholder: 'Your email', required: true }
       ]
-    } 
+    },
+
+    // CTA buttons: define presets that n8n can trigger via [#cta:preset-name] tags
+    ctaButtons: {
+      'send-email': {
+        label: 'Send to my Email',
+        popupTitle: 'Send to your Email',
+        popupSubtitle: "We'll send this information to your inbox.",
+        fields: [
+          { id: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Your name' },
+          { id: 'email', label: 'Email', type: 'email', required: true, placeholder: 'your@email.com' }
+        ],
+        messagePrefix: 'I would like to receive that information in my Email',
+        submitLabel: 'Submit'
+      }
+    }
   };
 </script>
 
@@ -188,7 +202,6 @@ Copy it, then remove anything you don’t need.
     })();
 </script>
 ```
-```
 
 ---
 
@@ -204,6 +217,7 @@ Everything lives under:
   - suggestedQuestions
   - loadUserCountry
   - prechat
+  - ctaButtons
 
 Below you’ll see each property written as a full path so you know exactly where to place it.
 
@@ -430,3 +444,115 @@ prechat: {
   ]
 }
 ```
+
+### CTA buttons (ChatWidgetEmbedConfig.ctaButtons.*)
+
+CTA (Call-to-Action) buttons let your n8n workflow insert interactive buttons inside bot messages. When clicked, they open an in-chat popup form. On submit, a hidden message is sent back to n8n with the collected data — the user never sees the message, but n8n processes it like any other input.
+
+**No defaults are provided.** If `ctaButtons` is not configured, any CTA tags in messages are silently removed.
+
+#### how it works
+
+1. Define one or more **presets** in `ctaButtons` (each preset is a named key)
+2. In your n8n workflow, include a CTA tag in the bot's response message
+3. The chat renders a branded button in place of the tag
+4. User clicks → popup form → submit → hidden message sent to n8n
+
+#### tag syntax (what n8n sends in the message)
+
+| Tag | Result |
+|-----|--------|
+| `[#cta:send-email]` | Renders a button using the `send-email` preset's default label |
+| `[#cta:send-email:Get this via Email]` | Same preset, but overrides the button text |
+
+The preset name must match a key in your `ctaButtons` config. If it doesn't exist, the tag is removed and a warning is logged to the browser console.
+
+#### preset properties
+
+Put these inside: `ChatWidgetEmbedConfig.ctaButtons.yourPresetName = { ... }`
+
+| Property | Required | Description |
+|----------|----------|-------------|
+| `label` | Yes | Default text shown on the button (can be overridden in the tag). |
+| `popupTitle` | Yes | Title displayed at the top of the popup form. |
+| `popupSubtitle` | Yes | Subtitle/description shown below the title. |
+| `fields` | Yes | Array of form field objects (see below). |
+| `messagePrefix` | Yes | First line of the hidden message sent on submit. |
+| `submitLabel` | No | Text on the popup's submit button. Default `"Submit"`. |
+
+#### field object structure
+
+| Property | Required | Description |
+|----------|----------|-------------|
+| `id` | Yes | Unique identifier for the field. |
+| `label` | Yes | Label text displayed above the input. |
+| `type` | No | HTML input type (`text`, `email`, `tel`, etc.). Default `"text"`. |
+| `required` | No | Whether the field must be filled. Default `false`. |
+| `placeholder` | No | Placeholder text inside the input. |
+
+#### hidden message format
+
+When the user submits the popup form, a hidden message is sent to n8n in this format:
+
+```
+{messagePrefix}
+{Field 1 Label}: {value}
+{Field 2 Label}: {value}
+```
+
+For example, with the `send-email` preset below:
+
+```
+I would like to receive that information in my Email
+Name: John Doe
+Email: john@example.com
+```
+
+#### behavior
+
+- Each button is **permanently disabled** after its form is submitted (one-use).
+- Multiple CTA buttons in different messages work **independently** — disabling one does not affect others.
+- All active CTA buttons are **temporarily disabled** while any message is being sent, and re-enabled when the response arrives.
+- The popup opens **inside the chat container** (not fullscreen), so it works safely in iframes.
+
+#### example: send to email
+
+```js
+ctaButtons: {
+  'send-email': {
+    label: 'Send to my Email',
+    popupTitle: 'Send to your Email',
+    popupSubtitle: "We'll send this information to your inbox.",
+    fields: [
+      { id: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Your name' },
+      { id: 'email', label: 'Email', type: 'email', required: true, placeholder: 'your@email.com' }
+    ],
+    messagePrefix: 'I would like to receive that information in my Email',
+    submitLabel: 'Submit'
+  }
+}
+```
+
+n8n sends: `Here's your tax summary. [#cta:send-email]`
+
+#### example: request a callback
+
+```js
+ctaButtons: {
+  'send-email': { /* ... */ },
+  'request-call': {
+    label: 'Request a Callback',
+    popupTitle: 'Request a Callback',
+    popupSubtitle: "Leave your details and we'll call you back.",
+    fields: [
+      { id: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Your name' },
+      { id: 'phone', label: 'Phone', type: 'tel', required: true, placeholder: '+1 555-0123' },
+      { id: 'time', label: 'Preferred Time', type: 'text', required: false, placeholder: 'e.g. Mornings' }
+    ],
+    messagePrefix: 'I would like to request a callback',
+    submitLabel: 'Call me'
+  }
+}
+```
+
+n8n sends: `Would you like us to call you? [#cta:request-call]`
