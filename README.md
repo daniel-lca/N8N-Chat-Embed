@@ -514,6 +514,7 @@ Email: john@example.com
 - Multiple CTA buttons in different messages work **independently** — disabling one does not affect others.
 - All active CTA buttons are **temporarily disabled** while any message is being sent, and re-enabled when the response arrives.
 - The popup opens **inside the chat container** (not fullscreen), so it works safely in iframes.
+- Form values are **cached per preset** — after the first submission, any subsequent button using the same preset will auto-send with the previously entered data without showing the form again.
 
 #### example: send to email
 
